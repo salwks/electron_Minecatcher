@@ -26,28 +26,6 @@ function cleanup() {
   }
 }
 
-// 난이도별 창 크기 설정
-const WINDOW_SIZES = {
-  beginner: { width: 400, height: 500 },
-  intermediate: { width: 600, height: 700 },
-  expert: { width: 900, height: 700 },
-};
-
-// 창 크기 고정 함수
-function setFixedWindowSize(level, customSize) {
-  if (!mainWindow) return;
-  let size = WINDOW_SIZES[level];
-  if (level === "custom" && customSize) {
-    size = customSize;
-  }
-  if (size) {
-    mainWindow.setResizable(false);
-    mainWindow.setMinimumSize(size.width, size.height);
-    mainWindow.setMaximumSize(size.width, size.height);
-    mainWindow.setSize(size.width, size.height);
-  }
-}
-
 // 앱 메뉴 설정
 function createMenu() {
   const template = [
@@ -73,7 +51,6 @@ function createMenu() {
           label: "초급",
           click: () => {
             if (mainWindow && !mainWindow.isDestroyed()) {
-              setFixedWindowSize("beginner");
               mainWindow.webContents.send("change-difficulty", "beginner");
             }
           },
@@ -82,7 +59,6 @@ function createMenu() {
           label: "중급",
           click: () => {
             if (mainWindow && !mainWindow.isDestroyed()) {
-              setFixedWindowSize("intermediate");
               mainWindow.webContents.send("change-difficulty", "intermediate");
             }
           },
@@ -91,7 +67,6 @@ function createMenu() {
           label: "고급",
           click: () => {
             if (mainWindow && !mainWindow.isDestroyed()) {
-              setFixedWindowSize("expert");
               mainWindow.webContents.send("change-difficulty", "expert");
             }
           },
@@ -165,37 +140,32 @@ function createWindow() {
   const isSafeMode = crashRecovery.isSafeMode();
   console.log("Creating window in safe mode:", isSafeMode);
 
+  const preloadPath = path.join(__dirname, "preload.js");
+  console.log("preload 경로:", preloadPath);
+
   mainWindow = new BrowserWindow({
     width: 400,
     height: 500,
-    minWidth: 350,
-    minHeight: 450,
-    resizable: false, // 크기 조절 비활성화
     webPreferences: {
       nodeIntegration: false, // 보안 강화
       contextIsolation: true, // 보안 강화
       enableRemoteModule: false,
       webSecurity: true,
       allowRunningInsecureContent: false,
-      // V8 엔진 안정성 향상을 위한 설정
       experimentalFeatures: false,
       enableWebSQL: false,
-      // 메모리 관리 개선
       backgroundThrottling: false,
-      // V8 엔진 최적화 설정
       v8CacheOptions: isSafeMode ? "none" : "code",
-      // 가비지 컬렉션 최적화 (안전 모드에서는 비활성화)
       enableBlinkFeatures: isSafeMode ? "" : "GarbageCollection",
-      // 안전 모드에서 추가 제한
       ...(isSafeMode && {
         disableDialogs: true,
         enableWebCodecs: false,
         enableWebRTC: false,
       }),
+      preload: preloadPath,
+      sandbox: false,
     },
-    // 안전한 창 설정
-    show: false, // 초기에 숨김
-    // 메모리 사용량 최적화
+    show: false,
     backgroundColor: "#ffffff",
   });
 
@@ -262,6 +232,7 @@ function createWindow() {
   // 창이 닫힐 때 참조 정리
   mainWindow.on("closed", () => {
     cleanup();
+    mainWindow = null;
   });
 }
 
@@ -330,10 +301,4 @@ process.on("exit", () => {
 process.on("SIGTERM", () => {
   cleanup();
   app.quit();
-});
-
-// 사용자 정의 난이도 크기 적용을 위한 IPC
-const { ipcMain } = require("electron");
-ipcMain.on("set-custom-window-size", (event, size) => {
-  setFixedWindowSize("custom", size);
 });

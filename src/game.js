@@ -1,3 +1,4 @@
+alert("game.js loaded!");
 class MinesweeperGame {
   constructor(rows = 9, cols = 9, mineCount = 10) {
     this.rows = rows;
@@ -64,8 +65,16 @@ class MinesweeperGame {
     this.firstClick = false;
 
     // 디버깅용 - 개발 중에만 사용
-    if (process.env.NODE_ENV === "development") {
-      this.printMineLocations();
+    try {
+      if (
+        typeof process !== "undefined" &&
+        process.env &&
+        process.env.NODE_ENV === "development"
+      ) {
+        this.printMineLocations();
+      }
+    } catch (e) {
+      // 아무것도 안 함
     }
   }
 
@@ -262,11 +271,12 @@ class MinesweeperGame {
       return "invalid";
     }
 
-    // 첫 클릭인 경우 지뢰 배치 및 게임 시작 기록
+    // 첫 클릭인 경우: 지뢰 배치 후, 다시 셀 오픈을 재귀적으로 호출
     if (this.firstClick) {
       this.handleFirstClick(row, col);
       this.startTimer();
       gameStats.recordGameStart(this.getDifficultyName());
+      return this.revealCell(row, col); // 첫 클릭 플래그가 false로 바뀌었으니, 다시 셀 오픈
     }
 
     // 지뢰를 클릭한 경우
@@ -953,16 +963,6 @@ function showCustomDialog() {
     // 지뢰 수 유효성 검사 (전체 셀의 1/3 이하로 제한)
     const maxMines = Math.floor((validRows * validCols) / 3);
     const validMines = Math.min(Math.max(mines, 1), maxMines);
-
-    // 창 크기 계산 (셀 크기 30px, 패딩 등 여유분 추가)
-    const width = validCols * 30 + 40;
-    const height = validRows * 30 + 100;
-    if (typeof require !== "undefined") {
-      try {
-        const { ipcRenderer } = require("electron");
-        ipcRenderer.send("set-custom-window-size", { width, height });
-      } catch (e) {}
-    }
 
     changeDifficulty(validRows, validCols, validMines);
     setActiveDifficultyButton("custom-btn");
