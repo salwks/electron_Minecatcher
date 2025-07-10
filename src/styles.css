@@ -1,0 +1,404 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.game-container {
+    border: 3px solid #808080;
+    border-radius: 5px;
+    background-color: #c0c0c0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #c0c0c0;
+    border-bottom: 3px solid #808080;
+}
+
+.mine-counter, .timer {
+    background-color: #000;
+    color: #f00;
+    font-family: 'Digital', monospace;
+    padding: 5px 10px;
+    border: 2px inset #808080;
+    min-width: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#restart-btn {
+    font-size: 24px;
+    background-color: #c0c0c0;
+    border: 2px outset #fff;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+#restart-btn:hover {
+    background-color: #d0d0d0;
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(9, 30px);
+    grid-template-rows: repeat(9, 30px);
+    gap: 1px;
+    padding: 10px;
+    background-color: #c0c0c0;
+}
+
+.cell {
+    width: 30px;
+    height: 30px;
+    background-color: #c0c0c0;
+    border: 2px outset #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+    user-select: none;
+}
+
+.cell:hover {
+    background-color: #d0d0d0;
+}
+
+.cell.revealed {
+    border: 1px solid #808080;
+    background-color: #d3d3d3;
+    border-style: inset;
+}
+
+.cell.flagged {
+    background-color: #c0c0c0;
+}
+
+.cell.mine {
+    background-color: #ff4444;
+}
+
+/* 숫자 색상 */
+.cell.number-1 { color: #0000ff; }
+.cell.number-2 { color: #008000; }
+.cell.number-3 { color: #ff0000; }
+.cell.number-4 { color: #000080; }
+.cell.number-5 { color: #800000; }
+.cell.number-6 { color: #008080; }
+.cell.number-7 { color: #000000; }
+.cell.number-8 { color: #808080; }
+
+/* 난이도 선택 UI */
+.difficulty-selector {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #c0c0c0;
+    border-bottom: 2px solid #808080;
+}
+
+.difficulty-btn {
+    margin: 0 5px;
+    padding: 5px 10px;
+    background-color: #c0c0c0;
+    border: 2px outset #fff;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 60px;
+}
+
+.difficulty-btn:hover {
+    background-color: #d0d0d0;
+}
+
+.difficulty-btn:active {
+    border-style: inset;
+}
+
+.difficulty-btn.active {
+    border-style: inset;
+    background-color: #a0a0a0;
+}
+
+/* 사용자 정의 대화상자 */
+.custom-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #c0c0c0;
+    border: 3px outset #fff;
+    padding: 20px;
+    z-index: 1000;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.custom-dialog h3 {
+    margin-top: 0;
+    text-align: center;
+    color: #000;
+}
+
+.custom-dialog div {
+    margin: 10px 0;
+}
+
+.custom-dialog label {
+    display: inline-block;
+    width: 80px;
+    font-weight: bold;
+}
+
+.custom-dialog input {
+    width: 60px;
+    padding: 2px;
+    border: 1px inset #808080;
+    background-color: #fff;
+}
+
+.custom-dialog button {
+    margin: 5px;
+    padding: 5px 15px;
+    background-color: #c0c0c0;
+    border: 2px outset #fff;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.custom-dialog button:hover {
+    background-color: #d0d0d0;
+}
+
+.custom-dialog button:active {
+    border-style: inset;
+}
+
+.custom-dialog .button-group {
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* 애니메이션 효과 */
+@keyframes reveal {
+    0% { 
+        transform: scale(0.1); 
+        opacity: 0; 
+    }
+    50% { 
+        transform: scale(1.1); 
+        opacity: 0.7; 
+    }
+    100% { 
+        transform: scale(1); 
+        opacity: 1; 
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        background-color: #ff4444; 
+        transform: scale(1); 
+    }
+    50% { 
+        background-color: #ff0000; 
+        transform: scale(1.05); 
+    }
+}
+
+.cell.mine-exploded {
+    background-color: #ff4444 !important;
+    animation: shake 0.5s ease-in-out, pulse 0.3s ease-in-out infinite;
+    border: 2px solid #ff0000 !important;
+}
+
+.cell.revealed {
+    animation: reveal 0.2s ease-out;
+}
+
+.cell.newly-revealed {
+    animation: reveal 0.2s ease-out;
+}
+
+/* 게임 결과 화면 */
+.game-result {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(40, 40, 40, 0.9));
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 2px solid #333;
+    min-width: 300px;
+    animation: reveal 0.3s ease-out;
+}
+
+.game-result h2 {
+    margin-top: 0;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.game-result.win h2 {
+    color: #4CAF50;
+}
+
+.game-result.lose h2 {
+    color: #f44336;
+}
+
+.game-result .stats {
+    margin: 20px 0;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.game-result .stats div {
+    margin: 8px 0;
+}
+
+.game-result button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.game-result button:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+}
+
+.game-result button:active {
+    transform: translateY(0);
+}
+
+/* 도움말 및 정보 화면 스타일 */
+.help-content, .about-content {
+    text-align: left;
+    margin: 15px 0;
+    color: white;
+}
+
+.help-content ul {
+    padding-left: 20px;
+}
+
+.help-content li {
+    margin: 5px 0;
+}
+
+.help-content p, .about-content p {
+    margin: 10px 0;
+}
+
+.help-content strong {
+    color: #4CAF50;
+}
+
+.about-content {
+    text-align: center;
+}
+
+.game-result .stats-container {
+    margin: 15px 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.game-result .stats-container table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+}
+
+.game-result .stats-container th,
+.game-result .stats-container td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.game-result .stats-container th {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.game-result .stats-container tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.game-result button {
+    margin: 5px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.game-result button:hover {
+    background-color: #45a049;
+    transform: translateY(-1px);
+}
+
+.game-result button:active {
+    transform: translateY(0);
+}
+
+/* 도움말 및 정보 화면 스타일 */
+.help-content, .about-content {
+    text-align: left;
+    margin: 15px 0;
+    color: white;
+}
+
+.help-content ul {
+    padding-left: 20px;
+}
+
+.help-content li {
+    margin: 5px 0;
+}
+
+.help-content p, .about-content p {
+    margin: 10px 0;
+}
+
+.help-content strong {
+    color: #4CAF50;
+}
+
+.about-content {
+    text-align: center;
+}

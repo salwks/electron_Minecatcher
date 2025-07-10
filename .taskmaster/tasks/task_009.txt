@@ -1,0 +1,363 @@
+# Task ID: 9
+# Title: 게임 통계 및 기록 관리 기능 구현
+# Status: pending
+# Dependencies: 7
+# Priority: low
+# Description: 게임 승리 시 소요 시간, 난이도 등의 기록을 저장하고 통계를 보여주는 기능을 구현한다.
+# Details:
+1. 게임 통계 관리 클래스 추가:
+```javascript
+class GameStatistics {
+  constructor() {
+    this.stats = this.loadStats();
+  }
+  
+  // 통계 불러오기
+  loadStats() {
+    const savedStats = localStorage.getItem('minesweeper_stats');
+    return savedStats ? JSON.parse(savedStats) : {
+      beginner: { played: 0, won: 0, bestTime: null },
+      intermediate: { played: 0, won: 0, bestTime: null },
+      expert: { played: 0, won: 0, bestTime: null },
+      custom: { played: 0, won: 0 }
+    };
+  }
+  
+  // 통계 저장
+  saveStats() {
+    localStorage.setItem('minesweeper_stats', JSON.stringify(this.stats));
+  }
+  
+  // 게임 시작 기록
+  recordGameStart(difficulty) {
+    this.stats[difficulty].played++;
+    this.saveStats();
+  }
+  
+  // 게임 승리 기록
+  recordGameWin(difficulty, time) {
+    this.stats[difficulty].won++;
+    
+    // 최고 기록 갱신 확인 (custom 난이도 제외)
+    if (difficulty !== 'custom') {
+      if (!this.stats[difficulty].bestTime || time < this.stats[difficulty].bestTime) {
+        this.stats[difficulty].bestTime = time;
+      }
+    }
+    
+    this.saveStats();
+    return this.isNewBestTime(difficulty, time);
+  }
+  
+  // 최고 기록 확인
+  isNewBestTime(difficulty, time) {
+    if (difficulty === 'custom') return false;
+    return this.stats[difficulty].bestTime === time;
+  }
+  
+  // 승률 계산
+  getWinRate(difficulty) {
+    const { played, won } = this.stats[difficulty];
+    return played > 0 ? Math.round((won / played) * 100) : 0;
+  }
+  
+  // 통계 초기화
+  resetStats() {
+    this.stats = {
+      beginner: { played: 0, won: 0, bestTime: null },
+      intermediate: { played: 0, won: 0, bestTime: null },
+      expert: { played: 0, won: 0, bestTime: null },
+      custom: { played: 0, won: 0 }
+    };
+    this.saveStats();
+  }
+}
+
+// 게임 통계 인스턴스 생성
+const gameStats = new GameStatistics();
+```
+
+2. 게임 시작 및 종료 시 통계 업데이트:
+```javascript
+class MinesweeperGame {
+  // 기존 코드 유지...
+  
+  // revealCell 메서드 수정 - 첫 클릭 시 게임 시작 기록
+  revealCell(row, col) {
+    // 이미 게임이 끝났거나, 이미 열린 셀이거나, 깃발이 꽂힌 셀이면 무시
+    if (this.gameOver || this.board[row][col].isRevealed || this.board[row][col].isFlagged) {
+      return;
+    }
+    
+    // 첫 클릭인 경우 지뢰 배치 및 타이머 시작, 게임 시작 기록
+    if (this.firstClick) {
+      this.placeMines(row, col);
+      this.startTimer();
+      gameStats.recordGameStart(this.getDifficultyName());
+    }
+    
+    // 기존 코드 유지...
+  }
+  
+  // 현재 난이도 이름 반환
+  getDifficultyName() {
+    if (this.rows === DIFFICULTY.BEGINNER.rows && this.cols === DIFFICULTY.BEGINNER.cols && this.mineCount === DIFFICULTY.BEGINNER.mines) {
+      return 'beginner';
+    } else if (this.rows === DIFFICULTY.INTERMEDIATE.rows && this.cols === DIFFICULTY.INTERMEDIATE.cols && this.mineCount === DIFFICULTY.INTERMEDIATE.mines) {
+      return 'intermediate';
+    } else if (this.rows === DIFFICULTY.EXPERT.rows && this.cols === DIFFICULTY.EXPERT.cols && this.mineCount === DIFFICULTY.EXPERT.mines) {
+      return 'expert';
+    } else {
+      return 'custom';
+    }
+  }
+}
+```
+
+3. 게임 결과 화면에 통계 표시 추가:
+```javascript
+function showGameResult(isWin) {
+  const resultElement = document.createElement('div');
+  resultElement.className = 'game-result';
+  
+  const difficultyName = game.getDifficultyName();
+  const difficultyDisplayName = {
+    'beginner': '초급',
+    'intermediate': '중급',
+    'expert': '고급',
+    'custom': '사용자 정의'
+  }[difficultyName];
+  
+  if (isWin) {
+    // 승리 기록 및 최고 기록 확인
+    const isNewBest = gameStats.recordGameWin(difficultyName, game.timer);
+    
+    resultElement.innerHTML = `
+      <h2>축하합니다! 승리했습니다!</h2>
+      <div class="stats">
+        <div>소요 시간: ${game.timer}초 ${isNewBest ? '(최고 기록!)' : ''}</div>
+        <div>난이도: ${difficultyDisplayName}</div>
+        <div>승률: ${gameStats.getWinRate(difficultyName)}%</div>
+      </div>
+      <button id="play-again">다시 플레이</button>
+      <button id="show-stats">통계 보기</button>
+    `;
+  } else {
+    resultElement.innerHTML = `
+      <h2>게임 오버!</h2>
+      <div class="stats">
+        <div>소요 시간: ${game.timer}초</div>
+        <div>난이도: ${difficultyDisplayName}</div>
+        <div>승률: ${gameStats.getWinRate(difficultyName)}%</div>
+      </div>
+      <button id="try-again">다시 시도</button>
+      <button id="show-stats">통계 보기</button>
+    `;
+  }
+  
+  document.body.appendChild(resultElement);
+  
+  // 다시 플레이 버튼 이벤트 리스너
+  document.getElementById(isWin ? 'play-again' : 'try-again').addEventListener('click', () => {
+    document.body.removeChild(resultElement);
+    game.reset();
+    renderBoard();
+    document.getElementById('restart-btn').textContent = '😊';
+  });
+  
+  // 통계 보기 버튼 이벤트 리스너
+  document.getElementById('show-stats').addEventListener('click', () => {
+    document.body.removeChild(resultElement);
+    showStatistics();
+  });
+}
+
+// 통계 화면 표시
+function showStatistics() {
+  const statsElement = document.createElement('div');
+  statsElement.className = 'game-result';
+  
+  const stats = gameStats.stats;
+  
+  statsElement.innerHTML = `
+    <h2>게임 통계</h2>
+    <div class="stats-container">
+      <table>
+        <tr>
+          <th>난이도</th>
+          <th>게임 수</th>
+          <th>승리</th>
+          <th>승률</th>
+          <th>최고 기록</th>
+        </tr>
+        <tr>
+          <td>초급</td>
+          <td>${stats.beginner.played}</td>
+          <td>${stats.beginner.won}</td>
+          <td>${gameStats.getWinRate('beginner')}%</td>
+          <td>${stats.beginner.bestTime ? stats.beginner.bestTime + '초' : '-'}</td>
+        </tr>
+        <tr>
+          <td>중급</td>
+          <td>${stats.intermediate.played}</td>
+          <td>${stats.intermediate.won}</td>
+          <td>${gameStats.getWinRate('intermediate')}%</td>
+          <td>${stats.intermediate.bestTime ? stats.intermediate.bestTime + '초' : '-'}</td>
+        </tr>
+        <tr>
+          <td>고급</td>
+          <td>${stats.expert.played}</td>
+          <td>${stats.expert.won}</td>
+          <td>${gameStats.getWinRate('expert')}%</td>
+          <td>${stats.expert.bestTime ? stats.expert.bestTime + '초' : '-'}</td>
+        </tr>
+        <tr>
+          <td>사용자 정의</td>
+          <td>${stats.custom.played}</td>
+          <td>${stats.custom.won}</td>
+          <td>${gameStats.getWinRate('custom')}%</td>
+          <td>-</td>
+        </tr>
+      </table>
+    </div>
+    <button id="close-stats">닫기</button>
+    <button id="reset-stats">통계 초기화</button>
+  `;
+  
+  document.body.appendChild(statsElement);
+  
+  // 닫기 버튼 이벤트 리스너
+  document.getElementById('close-stats').addEventListener('click', () => {
+    document.body.removeChild(statsElement);
+  });
+  
+  // 통계 초기화 버튼 이벤트 리스너
+  document.getElementById('reset-stats').addEventListener('click', () => {
+    if (confirm('정말 모든 통계를 초기화하시겠습니까?')) {
+      gameStats.resetStats();
+      document.body.removeChild(statsElement);
+      showStatistics(); // 초기화된 통계 다시 표시
+    }
+  });
+}
+
+// 메뉴에 통계 보기 버튼 추가
+document.addEventListener('DOMContentLoaded', () => {
+  // 기존 코드 유지...
+  
+  // 통계 버튼 추가
+  const difficultySelector = document.querySelector('.difficulty-selector');
+  const statsButton = document.createElement('button');
+  statsButton.id = 'stats-btn';
+  statsButton.textContent = '통계';
+  difficultySelector.appendChild(statsButton);
+  
+  statsButton.addEventListener('click', showStatistics);
+});
+```
+
+4. 통계 화면 스타일 추가 (styles.css):
+```css
+.stats-container {
+  margin: 15px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.stats-container table {
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+}
+
+.stats-container th, .stats-container td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stats-container th {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.stats-container tr:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+```
+
+# Test Strategy:
+1. 게임 승리 시 통계가 정상적으로 업데이트되는지 확인
+2. 최고 기록 갱신 시 '최고 기록!' 표시가 정상적으로 나타나는지 확인
+3. 통계 화면에 모든 난이도별 게임 수, 승리 수, 승률, 최고 기록이 정확히 표시되는지 확인
+4. 통계 초기화 기능이 정상적으로 작동하는지 확인
+5. 앱을 재시작해도 통계 데이터가 유지되는지 확인
+6. 다양한 난이도에서 게임을 진행한 후 통계가 정확히 반영되는지 확인
+
+# Subtasks:
+## 1. GameStatistics 클래스 구현 [pending]
+### Dependencies: None
+### Description: 게임 통계를 관리하는 GameStatistics 클래스를 구현하여 로컬 스토리지에 게임 기록을 저장하고 불러오는 기능을 구현한다.
+### Details:
+GameStatistics 클래스를 구현하여 다음 기능을 포함시킨다:
+- 생성자에서 로컬 스토리지에서 기존 통계 불러오기
+- loadStats() 메서드로 저장된 통계 불러오기
+- saveStats() 메서드로 통계 저장하기
+- recordGameStart() 메서드로 게임 시작 기록
+- recordGameWin() 메서드로 게임 승리 및 시간 기록
+- isNewBestTime() 메서드로 최고 기록 확인
+- getWinRate() 메서드로 승률 계산
+- resetStats() 메서드로 통계 초기화
+
+각 난이도별(초급, 중급, 고급, 사용자 정의)로 게임 수, 승리 수, 최고 기록을 저장한다.
+
+## 2. MinesweeperGame 클래스에 통계 연동 기능 추가 [pending]
+### Dependencies: None
+### Description: 기존 MinesweeperGame 클래스에 통계 기록 기능을 연동하여 게임 시작, 승리, 패배 시 통계를 업데이트하는 기능을 구현한다.
+### Details:
+MinesweeperGame 클래스에 다음 기능을 추가한다:
+- getDifficultyName() 메서드로 현재 게임의 난이도 이름 반환
+- revealCell() 메서드 수정하여 첫 클릭 시 gameStats.recordGameStart() 호출
+- checkWin() 메서드 수정하여 승리 시 gameStats.recordGameWin() 호출
+- 게임 종료 처리 시 통계 업데이트 로직 추가
+
+난이도는 게임 보드 크기와 지뢰 수를 기준으로 'beginner', 'intermediate', 'expert', 'custom' 중 하나로 판별한다.
+
+## 3. 게임 결과 화면에 통계 표시 기능 구현 [pending]
+### Dependencies: None
+### Description: 게임 종료 후 결과 화면에 게임 통계(소요 시간, 난이도, 승률)를 표시하고 최고 기록 달성 시 특별 표시를 추가한다.
+### Details:
+showGameResult() 함수를 구현하여 다음 기능을 포함시킨다:
+- 게임 승리/패배 여부에 따른 결과 화면 표시
+- 현재 게임의 소요 시간, 난이도, 승률 표시
+- 최고 기록 달성 시 특별 표시 추가
+- '다시 플레이' 및 '통계 보기' 버튼 추가
+- 버튼 클릭 이벤트 리스너 설정
+
+승리 시에는 gameStats.recordGameWin()을 호출하여 기록을 저장하고, 최고 기록 여부를 확인한다.
+
+## 4. 통계 상세 화면 구현 [pending]
+### Dependencies: None
+### Description: 모든 난이도의 게임 통계를 표 형태로 보여주는 상세 통계 화면을 구현하고, 통계 초기화 기능을 추가한다.
+### Details:
+showStatistics() 함수를 구현하여 다음 기능을 포함시킨다:
+- 모달 형태의 통계 화면 표시
+- 난이도별(초급, 중급, 고급, 사용자 정의) 게임 수, 승리 수, 승률, 최고 기록을 표 형태로 표시
+- '닫기' 및 '통계 초기화' 버튼 추가
+- 통계 초기화 시 확인 대화상자 표시 및 gameStats.resetStats() 호출
+- 초기화 후 갱신된 통계 다시 표시
+
+메인 메뉴에 '통계' 버튼을 추가하여 언제든지 통계 화면을 열 수 있도록 한다.
+
+## 5. 통계 화면 스타일링 및 UI 개선 [pending]
+### Dependencies: None
+### Description: 통계 화면과 게임 결과 화면의 CSS 스타일을 추가하여 사용자 경험을 향상시킨다.
+### Details:
+다음 UI 요소에 대한 CSS 스타일을 추가한다:
+- 통계 테이블 스타일링 (테두리, 색상, 간격 등)
+- 게임 결과 화면 스타일링 (배경, 텍스트 색상, 버튼 등)
+- 최고 기록 강조 표시 스타일
+- 통계 화면 모달 스타일 (배경 오버레이, 애니메이션 등)
+- 반응형 디자인으로 모바일 환경 지원
+
+.stats-container, .game-result 등의 클래스에 대한 CSS 규칙을 styles.css 파일에 추가한다.
+

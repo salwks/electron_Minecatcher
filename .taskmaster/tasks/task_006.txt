@@ -1,0 +1,189 @@
+# Task ID: 6
+# Title: 게임 난이도 설정 기능 구현
+# Status: pending
+# Dependencies: 4
+# Priority: medium
+# Description: 초급(9x9, 지뢰 10개), 중급(16x16, 지뢰 40개), 고급(16x30, 지뢰 99개) 등 난이도를 선택할 수 있는 기능을 구현한다.
+# Details:
+1. 난이도 선택 UI 추가 (index.html):
+```html
+<div class="game-container">
+  <div class="difficulty-selector">
+    <button id="beginner-btn">초급</button>
+    <button id="intermediate-btn">중급</button>
+    <button id="expert-btn">고급</button>
+    <button id="custom-btn">사용자 정의</button>
+  </div>
+  <!-- 기존 코드 유지... -->
+</div>
+```
+
+2. 난이도 선택 CSS 추가 (styles.css):
+```css
+.difficulty-selector {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  padding: 5px;
+  background-color: #c0c0c0;
+  border-bottom: 2px solid #808080;
+}
+
+.difficulty-selector button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  background-color: #c0c0c0;
+  border: 2px outset #fff;
+  cursor: pointer;
+}
+
+.difficulty-selector button:active {
+  border-style: inset;
+}
+
+.custom-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #c0c0c0;
+  border: 2px outset #fff;
+  padding: 20px;
+  z-index: 100;
+}
+
+.custom-dialog input {
+  width: 50px;
+  margin: 5px;
+}
+```
+
+3. 난이도 설정 JavaScript 코드 추가 (game.js):
+```javascript
+// 난이도 설정
+const DIFFICULTY = {
+  BEGINNER: { rows: 9, cols: 9, mines: 10 },
+  INTERMEDIATE: { rows: 16, cols: 16, mines: 40 },
+  EXPERT: { rows: 16, cols: 30, mines: 99 }
+};
+
+// 난이도 변경 함수
+function changeDifficulty(rows, cols, mines) {
+  game.resizeBoard(rows, cols, mines);
+  renderBoard();
+  document.querySelector('.mine-counter').textContent = mines;
+  document.querySelector('.timer').textContent = '0';
+  document.getElementById('restart-btn').textContent = '😊';
+  
+  // 창 크기 조정
+  const width = cols * 30 + 40; // 셀 너비 + 패딩
+  const height = rows * 30 + 100; // 셀 높이 + 헤더 + 패딩
+  window.resizeTo(width, height);
+}
+
+// 난이도 버튼 이벤트 리스너
+document.addEventListener('DOMContentLoaded', () => {
+  // 기존 코드 유지...
+  
+  // 난이도 버튼 이벤트 리스너 등록
+  document.getElementById('beginner-btn').addEventListener('click', () => {
+    const { rows, cols, mines } = DIFFICULTY.BEGINNER;
+    changeDifficulty(rows, cols, mines);
+  });
+  
+  document.getElementById('intermediate-btn').addEventListener('click', () => {
+    const { rows, cols, mines } = DIFFICULTY.INTERMEDIATE;
+    changeDifficulty(rows, cols, mines);
+  });
+  
+  document.getElementById('expert-btn').addEventListener('click', () => {
+    const { rows, cols, mines } = DIFFICULTY.EXPERT;
+    changeDifficulty(rows, cols, mines);
+  });
+  
+  document.getElementById('custom-btn').addEventListener('click', () => {
+    showCustomDialog();
+  });
+});
+
+// 사용자 정의 난이도 대화상자
+function showCustomDialog() {
+  const dialog = document.createElement('div');
+  dialog.className = 'custom-dialog';
+  dialog.innerHTML = `
+    <h3>사용자 정의 설정</h3>
+    <div>
+      <label>행: <input type="number" id="custom-rows" min="5" max="24" value="9"></label>
+    </div>
+    <div>
+      <label>열: <input type="number" id="custom-cols" min="5" max="30" value="9"></label>
+    </div>
+    <div>
+      <label>지뢰 수: <input type="number" id="custom-mines" min="1" max="200" value="10"></label>
+    </div>
+    <div style="margin-top: 10px;">
+      <button id="custom-apply">적용</button>
+      <button id="custom-cancel">취소</button>
+    </div>
+  `;
+  
+  document.body.appendChild(dialog);
+  
+  document.getElementById('custom-apply').addEventListener('click', () => {
+    const rows = parseInt(document.getElementById('custom-rows').value);
+    const cols = parseInt(document.getElementById('custom-cols').value);
+    let mines = parseInt(document.getElementById('custom-mines').value);
+    
+    // 지뢰 수 유효성 검사 (전체 셀의 1/3 이하로 제한)
+    const maxMines = Math.floor(rows * cols / 3);
+    mines = Math.min(mines, maxMines);
+    
+    changeDifficulty(rows, cols, mines);
+    document.body.removeChild(dialog);
+  });
+  
+  document.getElementById('custom-cancel').addEventListener('click', () => {
+    document.body.removeChild(dialog);
+  });
+}
+```
+
+# Test Strategy:
+1. 각 난이도 버튼 클릭 시 게임 보드가 올바른 크기로 변경되는지 확인
+2. 난이도 변경 시 지뢰 수가 올바르게 설정되는지 확인
+3. 사용자 정의 설정에서 유효한 값을 입력했을 때 정상적으로 적용되는지 확인
+4. 사용자 정의 설정에서 지뢰 수 제한이 제대로 적용되는지 확인
+5. 난이도 변경 시 게임이 재시작되고 타이머와 지뢰 카운터가 리셋되는지 확인
+6. 창 크기가 게임 보드 크기에 맞게 조정되는지 확인
+
+# Subtasks:
+## 1. HTML 난이도 선택 UI 구현 [pending]
+### Dependencies: None
+### Description: 게임 난이도를 선택할 수 있는 버튼 UI를 HTML에 추가합니다.
+### Details:
+index.html 파일에 난이도 선택 버튼(초급, 중급, 고급, 사용자 정의)을 포함하는 div 요소를 추가합니다. 각 버튼에는 적절한 id를 부여하여 JavaScript에서 참조할 수 있도록 합니다.
+
+## 2. CSS 스타일 적용 [pending]
+### Dependencies: 6.1
+### Description: 난이도 선택 UI와 사용자 정의 대화상자에 대한 CSS 스타일을 구현합니다.
+### Details:
+styles.css 파일에 난이도 선택 버튼과 사용자 정의 대화상자의 스타일을 추가합니다. 버튼의 hover, active 상태와 대화상자의 위치, 배경색, 테두리 등을 설정합니다.
+
+## 3. 난이도 설정 상수 및 변경 함수 구현 [pending]
+### Dependencies: None
+### Description: 각 난이도별 설정값(행, 열, 지뢰 수)을 정의하고 난이도 변경 함수를 구현합니다.
+### Details:
+game.js 파일에 DIFFICULTY 객체를 추가하여 초급, 중급, 고급 난이도의 설정값을 정의합니다. changeDifficulty 함수를 구현하여 게임 보드의 크기와 지뢰 수를 변경하고, UI 요소(지뢰 카운터, 타이머, 재시작 버튼)를 초기화합니다. 창 크기도 보드 크기에 맞게 조정합니다.
+
+## 4. 난이도 버튼 이벤트 리스너 구현 [pending]
+### Dependencies: 6.1, 6.3
+### Description: 난이도 선택 버튼에 클릭 이벤트 리스너를 추가하여 난이도 변경 기능을 연결합니다.
+### Details:
+DOMContentLoaded 이벤트 리스너 내에서 각 난이도 버튼(초급, 중급, 고급, 사용자 정의)에 클릭 이벤트 리스너를 등록합니다. 각 버튼 클릭 시 해당 난이도의 설정값을 가져와 changeDifficulty 함수를 호출하거나, 사용자 정의 버튼의 경우 showCustomDialog 함수를 호출합니다.
+
+## 5. 사용자 정의 난이도 대화상자 구현 [pending]
+### Dependencies: 6.2, 6.3, 6.4
+### Description: 사용자가 직접 행, 열, 지뢰 수를 설정할 수 있는 대화상자를 구현합니다.
+### Details:
+showCustomDialog 함수를 구현하여 사용자 정의 난이도 설정을 위한 대화상자를 생성합니다. 대화상자에는 행, 열, 지뢰 수를 입력할 수 있는 필드와 '적용', '취소' 버튼을 포함합니다. 적용 버튼 클릭 시 입력값의 유효성을 검사하고(지뢰 수는 전체 셀의 1/3 이하로 제한), changeDifficulty 함수를 호출하여 설정을 적용합니다. 취소 버튼 클릭 시 대화상자를 닫습니다.
+

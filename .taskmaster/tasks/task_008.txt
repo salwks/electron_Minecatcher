@@ -1,0 +1,213 @@
+# Task ID: 8
+# Title: 게임 상태 저장 및 불러오기 기능 구현
+# Status: pending
+# Dependencies: 5, 6
+# Priority: low
+# Description: 현재 게임 상태를 로컬 스토리지에 저장하고, 앱 재시작 시 이전 게임을 이어서 할 수 있는 기능을 구현한다.
+# Details:
+1. 게임 상태 저장 및 불러오기 메서드 추가:
+```javascript
+class MinesweeperGame {
+  // 기존 코드 유지...
+  
+  // 게임 상태 저장
+  saveGame() {
+    const gameState = {
+      rows: this.rows,
+      cols: this.cols,
+      mineCount: this.mineCount,
+      board: this.board,
+      revealed: this.revealed,
+      gameOver: this.gameOver,
+      flagCount: this.flagCount,
+      firstClick: this.firstClick,
+      timer: this.timer
+    };
+    
+    localStorage.setItem('minesweeper_game', JSON.stringify(gameState));
+  }
+  
+  // 게임 상태 불러오기
+  loadGame() {
+    const savedState = localStorage.getItem('minesweeper_game');
+    if (!savedState) return false;
+    
+    try {
+      const gameState = JSON.parse(savedState);
+      
+      this.rows = gameState.rows;
+      this.cols = gameState.cols;
+      this.mineCount = gameState.mineCount;
+      this.board = gameState.board;
+      this.revealed = gameState.revealed;
+      this.gameOver = gameState.gameOver;
+      this.flagCount = gameState.flagCount;
+      this.firstClick = gameState.firstClick;
+      this.timer = gameState.timer;
+      
+      // 타이머 재시작 (게임이 진행 중인 경우)
+      if (!this.gameOver && !this.firstClick) {
+        this.startTimer();
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('게임 상태 불러오기 실패:', error);
+      return false;
+    }
+  }
+  
+  // 저장된 게임 삭제
+  clearSavedGame() {
+    localStorage.removeItem('minesweeper_game');
+  }
+}
+```
+
+2. 자동 저장 기능 추가:
+```javascript
+// 주기적으로 게임 상태 저장 (5초마다)
+setInterval(() => {
+  if (!game.gameOver && !game.firstClick) {
+    game.saveGame();
+  }
+}, 5000);
+
+// 페이지 언로드 시 게임 상태 저장
+window.addEventListener('beforeunload', () => {
+  if (!game.gameOver) {
+    game.saveGame();
+  }
+});
+```
+
+3. 게임 시작 시 저장된 게임 불러오기:
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  // 저장된 게임이 있으면 불러오기
+  const hasSavedGame = game.loadGame();
+  
+  if (hasSavedGame) {
+    renderBoard();
+    updateBoard();
+    document.querySelector('.mine-counter').textContent = game.mineCount - game.flagCount;
+    document.querySelector('.timer').textContent = game.timer;
+    
+    // 게임 상태에 따라 표정 이모티콘 설정
+    if (game.gameOver) {
+      document.getElementById('restart-btn').textContent = '😵';
+    } else {
+      document.getElementById('restart-btn').textContent = '😊';
+    }
+  } else {
+    renderBoard();
+    document.querySelector('.mine-counter').textContent = game.mineCount;
+    document.querySelector('.timer').textContent = '0';
+  }
+  
+  // 이벤트 리스너 등록...
+});
+
+// 재시작 버튼 클릭 시 저장된 게임 삭제
+document.getElementById('restart-btn').addEventListener('click', () => {
+  game.clearSavedGame();
+  game.reset();
+  renderBoard();
+  document.getElementById('restart-btn').textContent = '😊';
+});
+
+// 난이도 변경 시 저장된 게임 삭제
+function changeDifficulty(rows, cols, mines) {
+  game.clearSavedGame();
+  // 기존 코드 유지...
+}
+```
+
+4. 저장된 게임 불러오기/새 게임 시작 선택 대화상자 추가:
+```javascript
+function showLoadGameDialog() {
+  const dialog = document.createElement('div');
+  dialog.className = 'custom-dialog';
+  dialog.innerHTML = `
+    <h3>저장된 게임이 있습니다</h3>
+    <p>이전 게임을 계속하시겠습니까?</p>
+    <div style="margin-top: 10px;">
+      <button id="load-game-btn">이어하기</button>
+      <button id="new-game-btn">새 게임</button>
+    </div>
+  `;
+  
+  document.body.appendChild(dialog);
+  
+  document.getElementById('load-game-btn').addEventListener('click', () => {
+    game.loadGame();
+    renderBoard();
+    updateBoard();
+    document.querySelector('.mine-counter').textContent = game.mineCount - game.flagCount;
+    document.querySelector('.timer').textContent = game.timer;
+    document.body.removeChild(dialog);
+  });
+  
+  document.getElementById('new-game-btn').addEventListener('click', () => {
+    game.clearSavedGame();
+    game.reset();
+    renderBoard();
+    document.body.removeChild(dialog);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 저장된 게임이 있는지 확인
+  const savedState = localStorage.getItem('minesweeper_game');
+  
+  if (savedState) {
+    showLoadGameDialog();
+  } else {
+    renderBoard();
+    document.querySelector('.mine-counter').textContent = game.mineCount;
+    document.querySelector('.timer').textContent = '0';
+  }
+  
+  // 이벤트 리스너 등록...
+});
+```
+
+# Test Strategy:
+1. 게임 진행 중 페이지를 새로고침한 후 이전 게임 상태가 정상적으로 불러와지는지 확인
+2. 게임 상태 저장 시 보드 상태, 타이머, 지뢰 카운터 등이 모두 정확히 저장되는지 확인
+3. 저장된 게임이 있을 때 '이어하기'와 '새 게임' 선택 대화상자가 정상적으로 표시되는지 확인
+4. '이어하기' 선택 시 게임이 정확히 이전 상태로 복원되는지 확인
+5. '새 게임' 선택 시 저장된 게임이 삭제되고 새 게임이 시작되는지 확인
+6. 난이도 변경 시 저장된 게임이 삭제되는지 확인
+
+# Subtasks:
+## 1. 게임 상태 데이터 구조 정의 및 저장 메서드 구현 [pending]
+### Dependencies: None
+### Description: 게임 상태를 저장하기 위한 데이터 구조를 정의하고 MinesweeperGame 클래스에 saveGame 메서드를 구현합니다.
+### Details:
+MinesweeperGame 클래스에 saveGame 메서드를 구현합니다. 저장할 게임 상태 데이터는 rows, cols, mineCount, board, revealed, gameOver, flagCount, firstClick, timer 등의 속성을 포함해야 합니다. localStorage.setItem('minesweeper_game', JSON.stringify(gameState))를 사용하여 게임 상태를 JSON 형태로 변환하여 로컬 스토리지에 저장합니다.
+
+## 2. 게임 상태 불러오기 및 초기화 메서드 구현 [pending]
+### Dependencies: None
+### Description: 저장된 게임 상태를 로컬 스토리지에서 불러오고 게임을 복원하는 loadGame 메서드와 저장된 게임을 삭제하는 clearSavedGame 메서드를 구현합니다.
+### Details:
+MinesweeperGame 클래스에 loadGame 메서드를 구현합니다. localStorage.getItem('minesweeper_game')을 사용하여 저장된 게임 상태를 불러오고, JSON.parse를 통해 객체로 변환합니다. 불러온 데이터로 게임 상태(rows, cols, mineCount, board, revealed 등)를 복원합니다. 게임이 진행 중이었다면 타이머를 재시작합니다. 또한 clearSavedGame 메서드를 구현하여 localStorage.removeItem('minesweeper_game')으로 저장된 게임을 삭제할 수 있도록 합니다.
+
+## 3. 자동 저장 기능 구현 [pending]
+### Dependencies: None
+### Description: 게임 진행 중 주기적으로 상태를 저장하고, 페이지 언로드 시에도 게임 상태를 저장하는 기능을 구현합니다.
+### Details:
+setInterval을 사용하여 5초마다 게임 상태를 자동 저장하는 기능을 구현합니다. 게임이 진행 중일 때만(gameOver가 false이고 firstClick이 false일 때) 저장이 이루어지도록 합니다. 또한 window.addEventListener('beforeunload', ...)를 사용하여 페이지를 닫거나 새로고침할 때 게임 상태를 저장합니다. 이 이벤트 리스너도 게임이 진행 중일 때만 저장 기능이 작동하도록 구현합니다.
+
+## 4. 게임 시작 시 저장된 게임 불러오기 구현 [pending]
+### Dependencies: None
+### Description: 앱 시작 시 저장된 게임이 있는지 확인하고, 있다면 이를 불러와 게임 화면을 복원하는 기능을 구현합니다.
+### Details:
+DOMContentLoaded 이벤트 리스너 내에서 game.loadGame()을 호출하여 저장된 게임이 있는지 확인합니다. 저장된 게임이 있으면(hasSavedGame이 true) 게임 보드를 렌더링하고 지뢰 카운터, 타이머, 이모티콘 등의 UI 요소를 게임 상태에 맞게 업데이트합니다. 재시작 버튼과 난이도 변경 기능에 game.clearSavedGame() 호출을 추가하여 새 게임 시작 시 저장된 게임이 삭제되도록 합니다.
+
+## 5. 저장된 게임 불러오기/새 게임 시작 선택 대화상자 구현 [pending]
+### Dependencies: None
+### Description: 앱 시작 시 저장된 게임이 있을 경우, 사용자에게 이전 게임을 계속할지 새 게임을 시작할지 선택할 수 있는 대화상자를 표시합니다.
+### Details:
+showLoadGameDialog 함수를 구현하여 저장된 게임이 있을 때 사용자에게 선택 대화상자를 표시합니다. 대화상자는 '이어하기'와 '새 게임' 버튼을 포함하며, '이어하기' 버튼 클릭 시 game.loadGame()을 호출하여 저장된 게임을 불러오고, '새 게임' 버튼 클릭 시 game.clearSavedGame()과 game.reset()을 호출하여 새 게임을 시작합니다. DOMContentLoaded 이벤트 리스너에서 localStorage.getItem('minesweeper_game')을 통해 저장된 게임이 있는지 확인하고, 있으면 showLoadGameDialog 함수를 호출합니다.
+

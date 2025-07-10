@@ -1,0 +1,696 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Electron 프로젝트 초기 설정",
+        "description": "Electron 기반 지뢰찾기 게임 프로젝트의 기본 구조를 설정하고 필요한 패키지를 설치한다.",
+        "details": "1. Node.js 프로젝트 초기화: `npm init -y`\n2. Electron 설치: `npm install --save-dev electron`\n3. 기본 디렉토리 구조 생성:\n   - `/src`: 소스 코드\n   - `/assets`: 이미지 등 리소스\n4. 기본 Electron 설정 파일 생성 (main.js):\n```javascript\nconst { app, BrowserWindow } = require('electron');\nconst path = require('path');\n\nfunction createWindow() {\n  const mainWindow = new BrowserWindow({\n    width: 800,\n    height: 600,\n    webPreferences: {\n      nodeIntegration: true,\n      contextIsolation: false\n    }\n  });\n\n  mainWindow.loadFile('src/index.html');\n}\n\napp.whenReady().then(() => {\n  createWindow();\n\n  app.on('activate', function () {\n    if (BrowserWindow.getAllWindows().length === 0) createWindow();\n  });\n});\n\napp.on('window-all-closed', function () {\n  if (process.platform !== 'darwin') app.quit();\n});\n```\n5. package.json에 스크립트 추가:\n```json\n\"scripts\": {\n  \"start\": \"electron .\"\n}\n```\n6. 기본 HTML 파일 생성 (src/index.html)",
+        "testStrategy": "1. `npm start` 명령어로 Electron 앱이 정상적으로 실행되는지 확인\n2. 기본 창이 열리고 오류 없이 로드되는지 확인\n3. 개발자 도구를 열어 콘솔 오류가 없는지 확인",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "프로젝트 초기화 및 Electron 설치",
+            "description": "Node.js 프로젝트를 초기화하고 Electron 패키지를 설치한다.",
+            "dependencies": [],
+            "details": "1. 새 디렉토리 생성 및 이동\n2. `npm init -y` 명령으로 package.json 생성\n3. `npm install --save-dev electron` 명령으로 Electron 설치\n4. package.json에 start 스크립트 추가: `\"start\": \"electron .\"` \n5. .gitignore 파일 생성 (node_modules 등 제외)",
+            "status": "done",
+            "testStrategy": "설치 후 `npm list electron`으로 Electron이 정상 설치되었는지 확인"
+          },
+          {
+            "id": 2,
+            "title": "기본 디렉토리 구조 및 메인 파일 생성",
+            "description": "프로젝트에 필요한 기본 디렉토리 구조를 생성하고 Electron 메인 프로세스 파일을 작성한다.",
+            "dependencies": [
+              1
+            ],
+            "details": "1. 다음 디렉토리 구조 생성:\n   - `/src`: 소스 코드 디렉토리\n   - `/assets`: 이미지 등 리소스 디렉토리\n2. 프로젝트 루트에 main.js 파일 생성 및 기본 코드 작성:\n   - Electron 앱 초기화 코드\n   - BrowserWindow 생성 및 설정\n   - 앱 라이프사이클 이벤트 핸들러 등록",
+            "status": "done",
+            "testStrategy": "디렉토리 구조가 올바르게 생성되었는지 확인하고, main.js 파일이 문법적으로 유효한지 확인"
+          },
+          {
+            "id": 3,
+            "title": "기본 HTML 및 CSS 파일 생성",
+            "description": "지뢰찾기 게임의 기본 UI를 위한 HTML 및 CSS 파일을 생성한다.",
+            "dependencies": [
+              2
+            ],
+            "details": "1. src/index.html 파일 생성:\n   - 기본 HTML 구조 작성\n   - 게임 타이틀 및 컨트롤 영역 마크업\n   - 게임 보드를 위한 컨테이너 요소 추가\n2. src/styles.css 파일 생성:\n   - 기본 스타일 정의\n   - 게임 보드 및 셀 스타일 정의\n   - 버튼 및 UI 요소 스타일 정의\n3. HTML에 CSS 파일 연결",
+            "status": "done",
+            "testStrategy": "HTML 파일이 유효한지 확인하고, 브라우저에서 기본 레이아웃이 올바르게 표시되는지 확인"
+          },
+          {
+            "id": 4,
+            "title": "기본 JavaScript 파일 생성",
+            "description": "지뢰찾기 게임의 클라이언트 측 로직을 위한 JavaScript 파일을 생성한다.",
+            "dependencies": [
+              3
+            ],
+            "details": "1. src/game.js 파일 생성:\n   - 게임 상태 관리를 위한 기본 변수 정의\n   - 게임 보드 초기화 함수 스켈레톤 작성\n   - 이벤트 리스너 설정 함수 스켈레톤 작성\n2. HTML 파일에 JavaScript 파일 연결\n3. 기본적인 DOM 조작 코드 작성 (게임 보드 렌더링 준비)",
+            "status": "done",
+            "testStrategy": "JavaScript 파일이 문법적으로 유효한지 확인하고, 콘솔 로그를 통해 기본 함수가 호출되는지 테스트"
+          },
+          {
+            "id": 5,
+            "title": "Electron 앱 실행 및 기본 설정 테스트",
+            "description": "설정된 Electron 앱을 실행하고 기본 구성이 올바르게 작동하는지 테스트한다.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "1. `npm start` 명령으로 Electron 앱 실행\n2. 창 크기 및 타이틀 확인\n3. 개발자 도구 활성화 방법 추가:\n   - main.js에 `mainWindow.webContents.openDevTools()` 추가\n4. 창 닫기, 최소화 등 기본 기능 테스트\n5. 필요한 경우 package.json의 메인 스크립트 경로 수정\n6. 기본 설정 문제 해결 및 수정",
+            "status": "done",
+            "testStrategy": "앱이 정상적으로 실행되는지 확인하고, 개발자 도구를 통해 오류가 없는지 확인. 창 크기 조절 및 기본 동작이 예상대로 작동하는지 테스트"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "게임 보드 UI 구현",
+        "description": "지뢰찾기 게임의 기본 UI 레이아웃과 게임 보드를 HTML/CSS로 구현한다.",
+        "details": "1. 기본 HTML 구조 작성:\n```html\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n  <title>지뢰찾기</title>\n  <link rel=\"stylesheet\" href=\"styles.css\">\n</head>\n<body>\n  <div class=\"game-container\">\n    <div class=\"game-header\">\n      <div class=\"mine-counter\">0</div>\n      <button id=\"restart-btn\">😊</button>\n      <div class=\"timer\">0</div>\n    </div>\n    <div id=\"game-board\"></div>\n  </div>\n  <script src=\"game.js\"></script>\n</body>\n</html>\n```\n\n2. CSS 스타일 작성 (styles.css):\n```css\nbody {\n  font-family: Arial, sans-serif;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100vh;\n  margin: 0;\n  background-color: #f0f0f0;\n}\n\n.game-container {\n  border: 3px solid #808080;\n  border-radius: 5px;\n  background-color: #c0c0c0;\n  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);\n}\n\n.game-header {\n  display: flex;\n  justify-content: space-between;\n  padding: 10px;\n  background-color: #c0c0c0;\n  border-bottom: 3px solid #808080;\n}\n\n.mine-counter, .timer {\n  background-color: #000;\n  color: #f00;\n  font-family: 'Digital', monospace;\n  padding: 5px 10px;\n  border: 2px inset #808080;\n}\n\n#restart-btn {\n  font-size: 24px;\n  background-color: #c0c0c0;\n  border: 2px outset #fff;\n  cursor: pointer;\n}\n\n#game-board {\n  display: grid;\n  grid-template-columns: repeat(9, 30px);\n  grid-template-rows: repeat(9, 30px);\n  gap: 1px;\n  padding: 10px;\n}\n\n.cell {\n  width: 30px;\n  height: 30px;\n  background-color: #c0c0c0;\n  border: 2px outset #fff;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  font-weight: bold;\n  cursor: pointer;\n}\n\n.cell.revealed {\n  border: 1px solid #808080;\n  background-color: #d3d3d3;\n}\n\n.cell.flagged {\n  background-color: #c0c0c0;\n}\n```",
+        "testStrategy": "1. 브라우저에서 UI가 정상적으로 렌더링되는지 확인\n2. 다양한 화면 크기에서 레이아웃이 깨지지 않는지 확인\n3. 게임 보드 그리드가 9x9로 정확하게 표시되는지 확인\n4. 헤더의 타이머, 재시작 버튼, 지뢰 카운터가 올바르게 배치되었는지 확인",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "게임 보드 동적 생성 함수 구현",
+            "description": "JavaScript를 사용하여 게임 보드의 셀을 동적으로 생성하는 함수를 구현합니다. 난이도에 따라 다른 크기의 보드를 생성할 수 있도록 합니다.",
+            "dependencies": [],
+            "details": "game.js 파일에 createGameBoard 함수를 구현합니다. 이 함수는 rows, columns, mineCount 매개변수를 받아 게임 보드를 생성합니다. 기본값으로 초급 난이도(9x9, 10개 지뢰)를 설정합니다. DOM 조작을 통해 #game-board 요소 안에 cell 클래스를 가진 div 요소들을 생성하고, 각 셀에 row와 column 데이터 속성을 추가합니다. CSS Grid 속성을 동적으로 설정하여 보드 크기를 조정합니다.",
+            "status": "pending",
+            "testStrategy": "다양한 크기의 보드가 올바르게 생성되는지 확인합니다. 9x9, 16x16, 30x16 크기의 보드를 생성하고 셀 개수가 정확한지 확인합니다."
+          },
+          {
+            "id": 2,
+            "title": "셀 상태 및 스타일 관리 구현",
+            "description": "게임 보드의 각 셀에 대한 상태(숨김, 공개, 깃발 표시)를 관리하고 해당 상태에 따른 스타일을 적용하는 기능을 구현합니다.",
+            "dependencies": [],
+            "details": "셀의 상태를 관리하는 함수들을 구현합니다. revealCell 함수는 셀을 공개 상태로 변경하고 'revealed' 클래스를 추가합니다. toggleFlag 함수는 셀에 깃발 표시를 토글하고 'flagged' 클래스를 추가/제거합니다. 숫자가 표시된 셀에 대해 1~8까지의 숫자에 따라 다른 색상을 적용하는 getNumberColor 함수를 구현합니다. CSS에 각 숫자별 색상 스타일을 추가합니다.",
+            "status": "pending",
+            "testStrategy": "셀 클릭 시 revealed 클래스가 추가되는지, 우클릭 시 flagged 클래스가 토글되는지 확인합니다. 숫자별로 올바른 색상이 적용되는지 테스트합니다."
+          },
+          {
+            "id": 3,
+            "title": "게임 헤더 UI 기능 구현",
+            "description": "게임 헤더의 타이머, 지뢰 카운터, 재시작 버튼의 기능을 구현합니다.",
+            "dependencies": [],
+            "details": "타이머 기능을 구현합니다. 게임 시작 시 타이머가 1초마다 증가하도록 setInterval을 사용합니다. 지뢰 카운터는 남은 지뢰 수(전체 지뢰 수 - 깃발 수)를 표시합니다. 재시작 버튼 클릭 시 게임을 초기화하는 기능을 구현합니다. 게임 상태에 따라 재시작 버튼의 이모지를 변경합니다(게임 중: 😊, 승리: 😎, 패배: 😵).",
+            "status": "pending",
+            "testStrategy": "타이머가 정확히 1초마다 증가하는지, 깃발을 설치/제거할 때 지뢰 카운터가 올바르게 업데이트되는지, 재시작 버튼 클릭 시 게임이 초기화되는지 확인합니다."
+          },
+          {
+            "id": 4,
+            "title": "반응형 디자인 및 UI 개선",
+            "description": "다양한 화면 크기에서 게임 보드가 적절하게 표시되도록 반응형 디자인을 적용하고 UI를 개선합니다.",
+            "dependencies": [
+              3
+            ],
+            "details": "미디어 쿼리를 사용하여 다양한 화면 크기에 대응하는 스타일을 추가합니다. 모바일 화면에서는 셀 크기를 줄이고 터치 조작에 최적화합니다. 게임 컨테이너에 최대 너비를 설정하고 화면 크기에 따라 자동으로 조정되도록 합니다. 호버 효과와 클릭 애니메이션을 추가하여 사용자 경험을 향상시킵니다. 폰트와 색상 대비를 개선하여 가독성을 높입니다.",
+            "status": "pending",
+            "testStrategy": "다양한 화면 크기와 기기에서 게임 보드가 적절하게 표시되는지 확인합니다. 모바일 기기에서 터치 조작이 원활하게 작동하는지 테스트합니다."
+          },
+          {
+            "id": 5,
+            "title": "난이도 선택 UI 구현",
+            "description": "사용자가 게임 난이도(초급, 중급, 고급)를 선택할 수 있는 UI를 구현합니다.",
+            "dependencies": [
+              3
+            ],
+            "details": "게임 컨테이너 위에 난이도 선택 버튼 그룹을 추가합니다. 초급(9x9, 10개 지뢰), 중급(16x16, 40개 지뢰), 고급(30x16, 99개 지뢰) 옵션을 제공합니다. 난이도 변경 시 게임 보드를 재생성하고 게임을 초기화하는 기능을 구현합니다. 현재 선택된 난이도 버튼을 시각적으로 강조하는 스타일을 적용합니다. 로컬 스토리지를 사용하여 사용자가 선택한 마지막 난이도를 저장하고 페이지 로드 시 복원합니다.",
+            "status": "pending",
+            "testStrategy": "각 난이도 버튼 클릭 시 올바른 크기의 게임 보드가 생성되는지, 지뢰 카운터가 해당 난이도의 지뢰 수로 초기화되는지, 페이지 새로고침 후에도 선택한 난이도가 유지되는지 확인합니다."
+          },
+          {
+            "id": 6,
+            "title": "게임 보드 셀 생성 함수 구현",
+            "description": "JavaScript를 사용하여 게임 보드의 셀을 동적으로 생성하는 함수를 구현합니다.",
+            "dependencies": [],
+            "details": "game.js 파일에 다음 코드를 작성합니다:\n\nconst boardSize = 9;\nconst totalMines = 10;\nlet gameBoard = [];\n\nfunction createBoard() {\n  const board = document.getElementById('game-board');\n  board.innerHTML = '';\n  \n  // 게임 보드 배열 초기화\n  gameBoard = Array(boardSize).fill().map(() => Array(boardSize).fill(0));\n  \n  // 셀 생성\n  for (let row = 0; row < boardSize; row++) {\n    for (let col = 0; col < boardSize; col++) {\n      const cell = document.createElement('div');\n      cell.classList.add('cell');\n      cell.dataset.row = row;\n      cell.dataset.col = col;\n      \n      // 클릭 이벤트 리스너 추가 (나중에 구현)\n      cell.addEventListener('click', handleCellClick);\n      cell.addEventListener('contextmenu', handleRightClick);\n      \n      board.appendChild(cell);\n    }\n  }\n}\n\n// 임시 함수 (나중에 구현)\nfunction handleCellClick() {}\nfunction handleRightClick(e) {\n  e.preventDefault();\n}",
+            "status": "pending",
+            "testStrategy": "브라우저에서 페이지를 로드하고 개발자 도구로 DOM을 검사하여 9x9 그리드의 셀이 올바르게 생성되었는지 확인합니다."
+          },
+          {
+            "id": 7,
+            "title": "지뢰 배치 및 숫자 계산 구현",
+            "description": "게임 보드에 무작위로 지뢰를 배치하고, 각 셀 주변의 지뢰 수를 계산하는 함수를 구현합니다.",
+            "dependencies": [
+              6
+            ],
+            "details": "game.js 파일에 다음 함수들을 추가합니다:\n\nfunction placeMines() {\n  let minesPlaced = 0;\n  \n  while (minesPlaced < totalMines) {\n    const row = Math.floor(Math.random() * boardSize);\n    const col = Math.floor(Math.random() * boardSize);\n    \n    // 이미 지뢰가 있는 위치가 아니라면 지뢰 배치\n    if (gameBoard[row][col] !== -1) {\n      gameBoard[row][col] = -1; // -1은 지뢰를 의미\n      minesPlaced++;\n    }\n  }\n}\n\nfunction calculateNumbers() {\n  for (let row = 0; row < boardSize; row++) {\n    for (let col = 0; col < boardSize; col++) {\n      // 지뢰가 있는 셀은 건너뜀\n      if (gameBoard[row][col] === -1) continue;\n      \n      // 주변 8개 셀 확인\n      let count = 0;\n      for (let r = Math.max(0, row-1); r <= Math.min(boardSize-1, row+1); r++) {\n        for (let c = Math.max(0, col-1); c <= Math.min(boardSize-1, col+1); c++) {\n          if (gameBoard[r][c] === -1) count++;\n        }\n      }\n      \n      gameBoard[row][col] = count;\n    }\n  }\n}\n\nfunction initGame() {\n  createBoard();\n  placeMines();\n  calculateNumbers();\n}\n\n// 페이지 로드 시 게임 초기화\nwindow.addEventListener('load', initGame);",
+            "status": "pending",
+            "testStrategy": "콘솔에 gameBoard 배열을 출력하여 지뢰(-1)가 10개 배치되었는지, 그리고 각 셀의 숫자가 주변 지뢰 수에 맞게 계산되었는지 확인합니다."
+          },
+          {
+            "id": 8,
+            "title": "셀 클릭 이벤트 처리 구현",
+            "description": "사용자가 셀을 클릭했을 때 셀을 열거나 게임 오버를 처리하는 기능을 구현합니다.",
+            "dependencies": [
+              7
+            ],
+            "details": "game.js 파일에 다음 코드를 추가합니다:\n\nlet gameOver = false;\n\nfunction handleCellClick(e) {\n  if (gameOver) return;\n  \n  const row = parseInt(e.target.dataset.row);\n  const col = parseInt(e.target.dataset.col);\n  \n  // 이미 열린 셀이거나 깃발이 꽂힌 셀은 무시\n  if (e.target.classList.contains('revealed') || e.target.classList.contains('flagged')) {\n    return;\n  }\n  \n  // 지뢰를 클릭한 경우\n  if (gameBoard[row][col] === -1) {\n    revealMines();\n    e.target.style.backgroundColor = 'red';\n    document.getElementById('restart-btn').textContent = '😵';\n    gameOver = true;\n    return;\n  }\n  \n  // 빈 셀(0)을 클릭한 경우 주변 셀도 함께 열기\n  if (gameBoard[row][col] === 0) {\n    revealEmptyCells(row, col);\n  } else {\n    // 숫자 셀인 경우 해당 셀만 열기\n    revealCell(row, col);\n  }\n  \n  // 승리 조건 확인\n  checkWin();\n}\n\nfunction revealCell(row, col) {\n  const cell = document.querySelector(`[data-row=\"${row}\"][data-col=\"${col}\"]`);\n  if (cell.classList.contains('revealed') || cell.classList.contains('flagged')) {\n    return;\n  }\n  \n  cell.classList.add('revealed');\n  \n  // 숫자 표시 (0은 표시하지 않음)\n  if (gameBoard[row][col] > 0) {\n    cell.textContent = gameBoard[row][col];\n    \n    // 숫자에 따라 색상 지정\n    const colors = ['', 'blue', 'green', 'red', 'darkblue', 'darkred', 'teal', 'black', 'gray'];\n    cell.style.color = colors[gameBoard[row][col]];\n  }\n}\n\nfunction revealEmptyCells(row, col) {\n  // 범위를 벗어나거나 이미 열린 셀이면 무시\n  if (row < 0 || row >= boardSize || col < 0 || col >= boardSize) {\n    return;\n  }\n  \n  const cell = document.querySelector(`[data-row=\"${row}\"][data-col=\"${col}\"]`);\n  if (cell.classList.contains('revealed') || cell.classList.contains('flagged')) {\n    return;\n  }\n  \n  // 현재 셀 열기\n  revealCell(row, col);\n  \n  // 빈 셀(0)인 경우에만 주변 셀 재귀적으로 열기\n  if (gameBoard[row][col] === 0) {\n    for (let r = Math.max(0, row-1); r <= Math.min(boardSize-1, row+1); r++) {\n      for (let c = Math.max(0, col-1); c <= Math.min(boardSize-1, col+1); c++) {\n        if (r !== row || c !== col) {\n          revealEmptyCells(r, c);\n        }\n      }\n    }\n  }\n}\n\nfunction revealMines() {\n  for (let row = 0; row < boardSize; row++) {\n    for (let col = 0; col < boardSize; col++) {\n      if (gameBoard[row][col] === -1) {\n        const cell = document.querySelector(`[data-row=\"${row}\"][data-col=\"${col}\"]`);\n        cell.classList.add('revealed');\n        cell.textContent = '💣';\n      }\n    }\n  }\n}",
+            "status": "pending",
+            "testStrategy": "여러 셀을 클릭하여 다음을 확인합니다:\n1. 숫자 셀을 클릭하면 해당 숫자가 표시되는지\n2. 빈 셀(0)을 클릭하면 주변 빈 셀들이 함께 열리는지\n3. 지뢰를 클릭하면 모든 지뢰가 표시되고 게임이 종료되는지"
+          },
+          {
+            "id": 9,
+            "title": "우클릭 깃발 기능 구현",
+            "description": "사용자가 셀을 우클릭하면 깃발을 설치하거나 제거하는 기능과 지뢰 카운터를 구현합니다.",
+            "dependencies": [
+              8
+            ],
+            "details": "game.js 파일에 다음 코드를 추가합니다:\n\nlet flagsPlaced = 0;\n\nfunction handleRightClick(e) {\n  e.preventDefault(); // 기본 컨텍스트 메뉴 방지\n  if (gameOver) return;\n  \n  const cell = e.target;\n  \n  // 이미 열린 셀은 깃발을 꽂을 수 없음\n  if (cell.classList.contains('revealed')) {\n    return;\n  }\n  \n  // 깃발 토글\n  if (cell.classList.contains('flagged')) {\n    cell.classList.remove('flagged');\n    cell.textContent = '';\n    flagsPlaced--;\n  } else {\n    cell.classList.add('flagged');\n    cell.textContent = '🚩';\n    flagsPlaced++;\n  }\n  \n  // 지뢰 카운터 업데이트\n  updateMineCounter();\n}\n\nfunction updateMineCounter() {\n  const counter = document.querySelector('.mine-counter');\n  counter.textContent = totalMines - flagsPlaced;\n}\n\n// 초기 지뢰 카운터 설정\nfunction initMineCounter() {\n  const counter = document.querySelector('.mine-counter');\n  counter.textContent = totalMines;\n  flagsPlaced = 0;\n}\n\n// initGame 함수 업데이트\nfunction initGame() {\n  createBoard();\n  placeMines();\n  calculateNumbers();\n  initMineCounter();\n  gameOver = false;\n  document.getElementById('restart-btn').textContent = '😊';\n}",
+            "status": "pending",
+            "testStrategy": "셀을 우클릭하여 다음을 확인합니다:\n1. 깃발이 설치되고 제거되는지\n2. 지뢰 카운터가 깃발 수에 따라 업데이트되는지\n3. 이미 열린 셀에는 깃발을 설치할 수 없는지"
+          },
+          {
+            "id": 10,
+            "title": "게임 승리 조건 및 재시작 기능 구현",
+            "description": "게임 승리 조건을 확인하고, 재시작 버튼 기능을 구현합니다. 또한 타이머 기능을 추가합니다.",
+            "dependencies": [
+              9
+            ],
+            "details": "game.js 파일에 다음 코드를 추가합니다:\n\nlet timer;\nlet seconds = 0;\n\nfunction checkWin() {\n  // 모든 비지뢰 셀이 열렸는지 확인\n  const totalCells = boardSize * boardSize;\n  const revealedCells = document.querySelectorAll('.cell.revealed').length;\n  \n  if (revealedCells === totalCells - totalMines) {\n    gameOver = true;\n    document.getElementById('restart-btn').textContent = '😎';\n    clearInterval(timer);\n    \n    // 모든 지뢰에 깃발 표시\n    for (let row = 0; row < boardSize; row++) {\n      for (let col = 0; col < boardSize; col++) {\n        if (gameBoard[row][col] === -1) {\n          const cell = document.querySelector(`[data-row=\"${row}\"][data-col=\"${col}\"]`);\n          if (!cell.classList.contains('flagged')) {\n            cell.classList.add('flagged');\n            cell.textContent = '🚩';\n          }\n        }\n      }\n    }\n    \n    // 지뢰 카운터를 0으로 설정\n    document.querySelector('.mine-counter').textContent = '0';\n  }\n}\n\nfunction startTimer() {\n  seconds = 0;\n  document.querySelector('.timer').textContent = seconds;\n  \n  clearInterval(timer);\n  timer = setInterval(() => {\n    seconds++;\n    document.querySelector('.timer').textContent = seconds;\n    \n    // 999초 제한 (3자리 숫자)\n    if (seconds >= 999) {\n      clearInterval(timer);\n    }\n  }, 1000);\n}\n\nfunction setupRestartButton() {\n  const restartBtn = document.getElementById('restart-btn');\n  restartBtn.addEventListener('click', () => {\n    clearInterval(timer);\n    initGame();\n    startTimer();\n  });\n}\n\n// 첫 번째 클릭에서만 타이머 시작\nfunction handleFirstClick() {\n  const cells = document.querySelectorAll('.cell');\n  let firstClickDone = false;\n  \n  cells.forEach(cell => {\n    const originalClickHandler = cell.onclick;\n    \n    cell.onclick = (e) => {\n      if (!firstClickDone) {\n        firstClickDone = true;\n        startTimer();\n      }\n      \n      // 원래 클릭 핸들러 호출\n      handleCellClick(e);\n    };\n  });\n}\n\n// 초기화 함수 업데이트\nfunction initGame() {\n  createBoard();\n  placeMines();\n  calculateNumbers();\n  initMineCounter();\n  gameOver = false;\n  document.getElementById('restart-btn').textContent = '😊';\n  handleFirstClick();\n}\n\n// 페이지 로드 시 실행\nwindow.addEventListener('load', () => {\n  initGame();\n  setupRestartButton();\n});",
+            "status": "pending",
+            "testStrategy": "다음을 테스트합니다:\n1. 모든 비지뢰 셀을 열었을 때 게임 승리 조건이 작동하는지\n2. 재시작 버튼을 클릭하면 게임이 초기화되는지\n3. 첫 번째 클릭 시 타이머가 시작되는지\n4. 게임 승리 또는 패배 시 타이머가 멈추는지"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "게임 보드 생성 및 지뢰 배치 로직 구현",
+        "description": "NxN 크기의 게임 보드를 생성하고 지뢰를 무작위로 배치하는 핵심 로직을 구현한다.",
+        "details": "1. 게임 상태 관리를 위한 기본 구조 작성 (game.js):\n```javascript\nclass MinesweeperGame {\n  constructor(rows = 9, cols = 9, mineCount = 10) {\n    this.rows = rows;\n    this.cols = cols;\n    this.mineCount = mineCount;\n    this.board = [];\n    this.revealed = 0;\n    this.gameOver = false;\n    this.flagCount = 0;\n    this.firstClick = true;\n    \n    this.initializeBoard();\n  }\n  \n  initializeBoard() {\n    // 빈 보드 생성\n    this.board = Array(this.rows).fill().map(() => \n      Array(this.cols).fill().map(() => ({\n        isMine: false,\n        isRevealed: false,\n        isFlagged: false,\n        neighborMines: 0\n      }))\n    );\n  }\n  \n  placeMines(firstClickRow, firstClickCol) {\n    let minesPlaced = 0;\n    \n    while (minesPlaced < this.mineCount) {\n      const row = Math.floor(Math.random() * this.rows);\n      const col = Math.floor(Math.random() * this.cols);\n      \n      // 첫 클릭 위치와 주변 8칸에는 지뢰를 배치하지 않음\n      const isFirstClickArea = Math.abs(row - firstClickRow) <= 1 && \n                              Math.abs(col - firstClickCol) <= 1;\n                              \n      if (!this.board[row][col].isMine && !isFirstClickArea) {\n        this.board[row][col].isMine = true;\n        minesPlaced++;\n        \n        // 주변 8칸의 neighborMines 값 증가\n        this.incrementNeighborMines(row, col);\n      }\n    }\n    \n    this.firstClick = false;\n  }\n  \n  incrementNeighborMines(row, col) {\n    for (let r = Math.max(0, row - 1); r <= Math.min(this.rows - 1, row + 1); r++) {\n      for (let c = Math.max(0, col - 1); c <= Math.min(this.cols - 1, col + 1); c++) {\n        if (r !== row || c !== col) {\n          this.board[r][c].neighborMines++;\n        }\n      }\n    }\n  }\n  \n  // 게임 보드 크기 변경 메서드\n  resizeBoard(rows, cols, mineCount) {\n    this.rows = rows;\n    this.cols = cols;\n    this.mineCount = mineCount;\n    this.reset();\n  }\n  \n  // 게임 리셋\n  reset() {\n    this.board = [];\n    this.revealed = 0;\n    this.gameOver = false;\n    this.flagCount = 0;\n    this.firstClick = true;\n    \n    this.initializeBoard();\n  }\n}\n\n// 게임 인스턴스 생성\nconst game = new MinesweeperGame();\n```\n\n2. 게임 보드 렌더링 함수 추가:\n```javascript\nfunction renderBoard() {\n  const boardElement = document.getElementById('game-board');\n  boardElement.innerHTML = '';\n  boardElement.style.gridTemplateColumns = `repeat(${game.cols}, 30px)`;\n  boardElement.style.gridTemplateRows = `repeat(${game.rows}, 30px)`;\n  \n  for (let row = 0; row < game.rows; row++) {\n    for (let col = 0; col < game.cols; col++) {\n      const cell = document.createElement('div');\n      cell.className = 'cell';\n      cell.dataset.row = row;\n      cell.dataset.col = col;\n      \n      // 셀 클릭 이벤트 추가는 다음 태스크에서 구현\n      \n      boardElement.appendChild(cell);\n    }\n  }\n}\n\n// 초기 보드 렌더링\ndocument.addEventListener('DOMContentLoaded', () => {\n  renderBoard();\n});\n```",
+        "testStrategy": "1. 다양한 크기(9x9, 16x16 등)의 게임 보드가 정상적으로 생성되는지 확인\n2. 지뢰가 지정된 개수만큼 정확히 배치되는지 확인\n3. 첫 클릭 위치와 그 주변에는 지뢰가 배치되지 않는지 확인\n4. 각 셀의 neighborMines 값이 주변 지뢰 수에 맞게 정확히 계산되는지 확인\n5. 콘솔에 board 배열을 출력하여 데이터 구조가 올바른지 검증",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "구현 및 테스트 placeMines 메서드",
+            "description": "첫 번째 클릭 위치를 기반으로 지뢰를 무작위로 배치하는 placeMines 메서드를 완성하고 테스트한다.",
+            "dependencies": [],
+            "details": "placeMines 메서드는 이미 기본 구조가 작성되어 있으므로, 다음 사항을 확인하고 보완한다:\n1. 첫 클릭 위치와 그 주변 8칸에 지뢰가 배치되지 않도록 하는 로직 검증\n2. 무작위 지뢰 배치 알고리즘의 효율성 검토 (무한 루프 방지)\n3. 지뢰 수가 보드 크기보다 클 경우의 예외 처리 추가\n4. 콘솔에 지뢰 위치를 출력하는 디버깅 코드 추가 (개발 중에만 사용)\n\n```javascript\nplaceMines(firstClickRow, firstClickCol) {\n  // 지뢰 수가 배치 가능한 셀 수보다 많은 경우 예외 처리\n  const safeArea = 9; // 첫 클릭 위치와 주변 8칸\n  const totalCells = this.rows * this.cols;\n  const maxMines = totalCells - safeArea;\n  \n  if (this.mineCount > maxMines) {\n    this.mineCount = maxMines;\n    console.warn(`지뢰 수가 너무 많아 ${maxMines}개로 조정되었습니다.`);\n  }\n  \n  let minesPlaced = 0;\n  \n  while (minesPlaced < this.mineCount) {\n    const row = Math.floor(Math.random() * this.rows);\n    const col = Math.floor(Math.random() * this.cols);\n    \n    // 첫 클릭 위치와 주변 8칸에는 지뢰를 배치하지 않음\n    const isFirstClickArea = Math.abs(row - firstClickRow) <= 1 && \n                           Math.abs(col - firstClickCol) <= 1;\n                           \n    if (!this.board[row][col].isMine && !isFirstClickArea) {\n      this.board[row][col].isMine = true;\n      minesPlaced++;\n      \n      // 주변 8칸의 neighborMines 값 증가\n      this.incrementNeighborMines(row, col);\n    }\n  }\n  \n  this.firstClick = false;\n  \n  // 디버깅용 - 개발 중에만 사용\n  this.printMineLocations();\n}\n\n// 디버깅용 - 지뢰 위치 출력\nprintMineLocations() {\n  console.log('지뢰 위치:');\n  for (let row = 0; row < this.rows; row++) {\n    for (let col = 0; col < this.cols; col++) {\n      if (this.board[row][col].isMine) {\n        console.log(`[${row}, ${col}]`);\n      }\n    }\n  }\n}\n```",
+            "status": "done",
+            "testStrategy": "1. 다양한 보드 크기와 지뢰 수로 테스트\n2. 첫 클릭 위치 주변에 지뢰가 없는지 확인\n3. 지뢰 수가 보드 크기보다 클 경우 적절히 처리되는지 확인\n4. 지뢰 배치 후 neighborMines 값이 올바르게 계산되는지 확인"
+          },
+          {
+            "id": 2,
+            "title": "incrementNeighborMines 메서드 최적화 및 테스트",
+            "description": "지뢰 주변 8칸의 neighborMines 값을 증가시키는 incrementNeighborMines 메서드를 최적화하고 테스트한다.",
+            "dependencies": [],
+            "details": "incrementNeighborMines 메서드는 이미 기본 구조가 작성되어 있으나, 다음과 같이 최적화하고 테스트한다:\n\n```javascript\nincrementNeighborMines(row, col) {\n  // 주변 8방향에 대한 상대 좌표 배열\n  const directions = [\n    [-1, -1], [-1, 0], [-1, 1],\n    [0, -1],           [0, 1],\n    [1, -1],  [1, 0],  [1, 1]\n  ];\n  \n  for (const [dr, dc] of directions) {\n    const newRow = row + dr;\n    const newCol = col + dc;\n    \n    // 보드 범위 내에 있는지 확인\n    if (newRow >= 0 && newRow < this.rows && newCol >= 0 && newCol < this.cols) {\n      this.board[newRow][newCol].neighborMines++;\n    }\n  }\n}\n\n// 특정 셀의 주변 지뢰 수를 계산하는 유틸리티 메서드 추가\ncalculateNeighborMines(row, col) {\n  let count = 0;\n  const directions = [\n    [-1, -1], [-1, 0], [-1, 1],\n    [0, -1],           [0, 1],\n    [1, -1],  [1, 0],  [1, 1]\n  ];\n  \n  for (const [dr, dc] of directions) {\n    const newRow = row + dr;\n    const newCol = col + dc;\n    \n    if (newRow >= 0 && newRow < this.rows && \n        newCol >= 0 && newCol < this.cols && \n        this.board[newRow][newCol].isMine) {\n      count++;\n    }\n  }\n  \n  return count;\n}\n\n// 전체 보드의 neighborMines 값을 재계산하는 메서드 추가\nrecalculateAllNeighborMines() {\n  // 모든 셀의 neighborMines 값을 0으로 초기화\n  for (let row = 0; row < this.rows; row++) {\n    for (let col = 0; col < this.cols; col++) {\n      this.board[row][col].neighborMines = 0;\n    }\n  }\n  \n  // 지뢰가 있는 셀 주변의 neighborMines 값 증가\n  for (let row = 0; row < this.rows; row++) {\n    for (let col = 0; col < this.cols; col++) {\n      if (this.board[row][col].isMine) {\n        this.incrementNeighborMines(row, col);\n      }\n    }\n  }\n}\n```",
+            "status": "done",
+            "testStrategy": "1. 보드 가장자리와 모서리에 지뢰를 배치하여 경계 조건 테스트\n2. 여러 지뢰가 인접한 경우 neighborMines 값이 올바르게 계산되는지 확인\n3. recalculateAllNeighborMines 메서드가 올바르게 작동하는지 확인\n4. calculateNeighborMines 메서드의 결과와 보드에 저장된 값이 일치하는지 확인"
+          },
+          {
+            "id": 3,
+            "title": "게임 난이도 설정 기능 구현",
+            "description": "초급, 중급, 고급 등 다양한 난이도 설정을 위한 기능을 구현한다.",
+            "dependencies": [],
+            "details": "게임 난이도에 따라 보드 크기와 지뢰 수를 조정하는 기능을 구현한다:\n\n```javascript\n// MinesweeperGame 클래스에 난이도 설정 메서드 추가\nsetDifficulty(level) {\n  switch(level) {\n    case 'beginner':\n      this.resizeBoard(9, 9, 10);\n      break;\n    case 'intermediate':\n      this.resizeBoard(16, 16, 40);\n      break;\n    case 'expert':\n      this.resizeBoard(16, 30, 99);\n      break;\n    case 'custom':\n      // 커스텀 설정은 별도 UI를 통해 처리\n      break;\n    default:\n      this.resizeBoard(9, 9, 10); // 기본값은 초급\n  }\n  \n  return {\n    rows: this.rows,\n    cols: this.cols,\n    mines: this.mineCount\n  };\n}\n\n// 난이도 설정 UI 연결 함수\nfunction setupDifficultyControls() {\n  const difficultyButtons = document.querySelectorAll('.difficulty-btn');\n  \n  difficultyButtons.forEach(button => {\n    button.addEventListener('click', () => {\n      const level = button.dataset.level;\n      const settings = game.setDifficulty(level);\n      \n      // UI 업데이트\n      updateGameInfo(settings);\n      renderBoard();\n      \n      // 활성 버튼 스타일 변경\n      difficultyButtons.forEach(btn => btn.classList.remove('active'));\n      button.classList.add('active');\n    });\n  });\n  \n  // 커스텀 난이도 설정 처리\n  const customForm = document.getElementById('custom-form');\n  if (customForm) {\n    customForm.addEventListener('submit', (e) => {\n      e.preventDefault();\n      const rows = parseInt(document.getElementById('custom-rows').value);\n      const cols = parseInt(document.getElementById('custom-cols').value);\n      const mines = parseInt(document.getElementById('custom-mines').value);\n      \n      // 입력값 검증\n      const maxRows = 30, maxCols = 30;\n      const validRows = Math.min(Math.max(rows, 5), maxRows);\n      const validCols = Math.min(Math.max(cols, 5), maxCols);\n      const maxMines = Math.floor((validRows * validCols) * 0.85); // 최대 85%까지 지뢰 허용\n      const validMines = Math.min(Math.max(mines, 1), maxMines);\n      \n      game.resizeBoard(validRows, validCols, validMines);\n      \n      // UI 업데이트\n      updateGameInfo({\n        rows: validRows,\n        cols: validCols,\n        mines: validMines\n      });\n      renderBoard();\n      \n      // 커스텀 버튼 활성화\n      difficultyButtons.forEach(btn => btn.classList.remove('active'));\n      document.querySelector('[data-level=\"custom\"]').classList.add('active');\n    });\n  }\n}\n\n// 게임 정보 UI 업데이트\nfunction updateGameInfo(settings) {\n  const infoElement = document.getElementById('game-info');\n  if (infoElement) {\n    infoElement.textContent = `보드: ${settings.rows}×${settings.cols}, 지뢰: ${settings.mines}`;\n  }\n}\n```",
+            "status": "done",
+            "testStrategy": "1. 각 난이도 설정 시 보드 크기와 지뢰 수가 올바르게 변경되는지 확인\n2. 커스텀 설정에서 유효하지 않은 입력값이 적절히 처리되는지 확인\n3. 난이도 변경 시 UI가 올바르게 업데이트되는지 확인\n4. 난이도 변경 후 게임이 정상적으로 동작하는지 확인"
+          },
+          {
+            "id": 4,
+            "title": "게임 보드 UI 렌더링 개선",
+            "description": "게임 보드의 UI 렌더링을 개선하여 지뢰 수, 플래그 수 등의 정보를 표시하고 셀의 상태에 따라 다른 스타일을 적용한다.",
+            "dependencies": [],
+            "details": "게임 보드 렌더링 함수를 개선하여 셀의 상태에 따라 다른 스타일을 적용하고, 게임 정보를 표시한다:\n\n```javascript\nfunction renderBoard() {\n  const boardElement = document.getElementById('game-board');\n  boardElement.innerHTML = '';\n  boardElement.style.gridTemplateColumns = `repeat(${game.cols}, 30px)`;\n  boardElement.style.gridTemplateRows = `repeat(${game.rows}, 30px)`;\n  \n  for (let row = 0; row < game.rows; row++) {\n    for (let col = 0; col < game.cols; col++) {\n      const cell = document.createElement('div');\n      cell.className = 'cell';\n      cell.dataset.row = row;\n      cell.dataset.col = col;\n      \n      const cellData = game.board[row][col];\n      \n      // 셀 상태에 따른 클래스 추가\n      if (cellData.isRevealed) {\n        cell.classList.add('revealed');\n        \n        if (cellData.isMine) {\n          cell.classList.add('mine');\n          cell.textContent = '💣';\n        } else if (cellData.neighborMines > 0) {\n          cell.classList.add(`neighbors-${cellData.neighborMines}`);\n          cell.textContent = cellData.neighborMines;\n        }\n      } else if (cellData.isFlagged) {\n        cell.classList.add('flagged');\n        cell.textContent = '🚩';\n      }\n      \n      boardElement.appendChild(cell);\n    }\n  }\n  \n  // 게임 상태 정보 업데이트\n  updateGameStatus();\n}\n\nfunction updateGameStatus() {\n  // 남은 지뢰 수 표시 (지뢰 수 - 플래그 수)\n  const minesLeftElement = document.getElementById('mines-left');\n  if (minesLeftElement) {\n    minesLeftElement.textContent = `남은 지뢰: ${game.mineCount - game.flagCount}`;\n  }\n  \n  // 게임 상태 표시\n  const gameStatusElement = document.getElementById('game-status');\n  if (gameStatusElement) {\n    if (game.gameOver) {\n      const isWin = game.revealed === (game.rows * game.cols - game.mineCount);\n      gameStatusElement.textContent = isWin ? '게임 승리! 🎉' : '게임 오버! 💥';\n      gameStatusElement.className = isWin ? 'status-win' : 'status-lose';\n    } else {\n      gameStatusElement.textContent = '게임 진행 중';\n      gameStatusElement.className = '';\n    }\n  }\n}\n\n// 게임 보드 크기에 따라 컨테이너 크기 조정\nfunction adjustBoardContainer() {\n  const container = document.getElementById('game-container');\n  if (container) {\n    const cellSize = 30; // px\n    const borderWidth = 1; // px\n    const width = game.cols * (cellSize + 2 * borderWidth);\n    const height = game.rows * (cellSize + 2 * borderWidth);\n    \n    container.style.width = `${width}px`;\n    container.style.minHeight = `${height + 100}px`; // 추가 UI 공간 확보\n  }\n}\n\n// 초기 보드 렌더링 및 이벤트 설정\ndocument.addEventListener('DOMContentLoaded', () => {\n  renderBoard();\n  adjustBoardContainer();\n  setupDifficultyControls();\n});\n```",
+            "status": "done",
+            "testStrategy": "1. 다양한 보드 크기에서 UI가 올바르게 렌더링되는지 확인\n2. 셀 상태(공개, 플래그, 지뢰 등)에 따라 스타일이 올바르게 적용되는지 확인\n3. 게임 상태 정보(남은 지뢰 수, 게임 상태)가 올바르게 표시되는지 확인\n4. 난이도 변경 시 보드 컨테이너 크기가 적절히 조정되는지 확인"
+          },
+          {
+            "id": 5,
+            "title": "게임 초기화 및 첫 클릭 처리 구현",
+            "description": "게임 초기화 및 첫 번째 클릭 시 지뢰 배치 로직을 구현한다.",
+            "dependencies": [],
+            "details": "게임 초기화 및 첫 번째 클릭 시 지뢰 배치 로직을 구현한다:\n\n```javascript\n// MinesweeperGame 클래스에 메서드 추가\n\n// 첫 번째 클릭 처리 메서드\nhandleFirstClick(row, col) {\n  if (this.firstClick) {\n    this.placeMines(row, col);\n    return true;\n  }\n  return false;\n}\n\n// 게임 초기화 메서드 개선\nreset() {\n  this.board = [];\n  this.revealed = 0;\n  this.gameOver = false;\n  this.flagCount = 0;\n  this.firstClick = true;\n  \n  this.initializeBoard();\n  \n  // UI 업데이트\n  if (typeof renderBoard === 'function') {\n    renderBoard();\n  }\n}\n\n// 게임 시작 타이머 관련 메서드\nstartTimer() {\n  this.startTime = Date.now();\n  this.timerInterval = setInterval(() => {\n    const elapsedSeconds = Math.floor((Date.now() - this.startTime) / 1000);\n    this.updateTimerDisplay(elapsedSeconds);\n  }, 1000);\n}\n\nstopTimer() {\n  if (this.timerInterval) {\n    clearInterval(this.timerInterval);\n    this.timerInterval = null;\n  }\n}\n\nupdateTimerDisplay(seconds) {\n  const timerElement = document.getElementById('timer');\n  if (timerElement) {\n    timerElement.textContent = `시간: ${seconds}초`;\n  }\n}\n\n// UI 이벤트 핸들러 설정\nfunction setupBoardEvents() {\n  const boardElement = document.getElementById('game-board');\n  \n  boardElement.addEventListener('click', (e) => {\n    if (!e.target.classList.contains('cell') || game.gameOver) return;\n    \n    const row = parseInt(e.target.dataset.row);\n    const col = parseInt(e.target.dataset.col);\n    const cell = game.board[row][col];\n    \n    // 이미 공개되었거나 플래그가 있는 셀은 무시\n    if (cell.isRevealed || cell.isFlagged) return;\n    \n    // 첫 번째 클릭 처리\n    if (game.firstClick) {\n      game.handleFirstClick(row, col);\n      game.startTimer();\n    }\n    \n    // 셀 공개 로직은 다음 태스크에서 구현\n    \n    renderBoard();\n  });\n  \n  // 우클릭으로 플래그 설정 (다음 태스크에서 구현)\n  boardElement.addEventListener('contextmenu', (e) => {\n    e.preventDefault();\n    // 플래그 설정 로직은 다음 태스크에서 구현\n  });\n}\n\n// 리셋 버튼 이벤트 설정\nfunction setupResetButton() {\n  const resetButton = document.getElementById('reset-button');\n  if (resetButton) {\n    resetButton.addEventListener('click', () => {\n      game.stopTimer();\n      game.reset();\n    });\n  }\n}\n\n// 초기화 및 이벤트 설정\ndocument.addEventListener('DOMContentLoaded', () => {\n  renderBoard();\n  adjustBoardContainer();\n  setupDifficultyControls();\n  setupBoardEvents();\n  setupResetButton();\n});\n```",
+            "status": "done",
+            "testStrategy": "1. 첫 번째 클릭 시 지뢰가 배치되고 타이머가 시작되는지 확인\n2. 첫 번째 클릭 위치와 주변 8칸에 지뢰가 없는지 확인\n3. 게임 리셋 시 모든 상태가 초기화되는지 확인\n4. 타이머가 올바르게 작동하고 표시되는지 확인\n5. 난이도 변경 후 게임이 올바르게 초기화되는지 확인"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "셀 클릭 이벤트 및 게임 로직 구현",
+        "description": "좌클릭으로 셀을 열고, 우클릭으로 깃발을 표시하는 기능과 빈 셀 클릭 시 재귀적으로 주변 셀을 열어주는 로직을 구현한다.",
+        "details": "1. MinesweeperGame 클래스에 셀 클릭 관련 메서드 추가:\n```javascript\nclass MinesweeperGame {\n  // 기존 코드 유지...\n  \n  // 셀 클릭 처리\n  revealCell(row, col) {\n    // 이미 게임이 끝났거나, 이미 열린 셀이거나, 깃발이 꽂힌 셀이면 무시\n    if (this.gameOver || this.board[row][col].isRevealed || this.board[row][col].isFlagged) {\n      return;\n    }\n    \n    // 첫 클릭인 경우 지뢰 배치\n    if (this.firstClick) {\n      this.placeMines(row, col);\n    }\n    \n    // 지뢰를 클릭한 경우\n    if (this.board[row][col].isMine) {\n      this.gameOver = true;\n      this.revealAllMines();\n      return 'gameover';\n    }\n    \n    // 셀 오픈\n    this.board[row][col].isRevealed = true;\n    this.revealed++;\n    \n    // 주변 지뢰가 없는 빈 셀인 경우 재귀적으로 주변 셀 오픈\n    if (this.board[row][col].neighborMines === 0) {\n      this.revealEmptyCells(row, col);\n    }\n    \n    // 승리 조건 체크: 지뢰가 아닌 모든 셀이 열렸는지\n    if (this.revealed === (this.rows * this.cols - this.mineCount)) {\n      this.gameOver = true;\n      return 'win';\n    }\n    \n    return 'continue';\n  }\n  \n  // 빈 셀 주변을 재귀적으로 열기\n  revealEmptyCells(row, col) {\n    for (let r = Math.max(0, row - 1); r <= Math.min(this.rows - 1, row + 1); r++) {\n      for (let c = Math.max(0, col - 1); c <= Math.min(this.cols - 1, col + 1); c++) {\n        // 이미 열린 셀이거나 깃발이 꽂힌 셀은 무시\n        if (this.board[r][c].isRevealed || this.board[r][c].isFlagged) {\n          continue;\n        }\n        \n        // 셀 오픈\n        this.board[r][c].isRevealed = true;\n        this.revealed++;\n        \n        // 빈 셀이면 재귀 호출\n        if (this.board[r][c].neighborMines === 0) {\n          this.revealEmptyCells(r, c);\n        }\n      }\n    }\n  }\n  \n  // 깃발 토글\n  toggleFlag(row, col) {\n    // 이미 열린 셀이거나 게임이 끝난 경우 무시\n    if (this.board[row][col].isRevealed || this.gameOver) {\n      return;\n    }\n    \n    if (this.board[row][col].isFlagged) {\n      this.board[row][col].isFlagged = false;\n      this.flagCount--;\n    } else {\n      this.board[row][col].isFlagged = true;\n      this.flagCount++;\n    }\n    \n    return this.flagCount;\n  }\n  \n  // 모든 지뢰 보여주기 (게임 오버 시)\n  revealAllMines() {\n    for (let row = 0; row < this.rows; row++) {\n      for (let col = 0; col < this.cols; col++) {\n        if (this.board[row][col].isMine) {\n          this.board[row][col].isRevealed = true;\n        }\n      }\n    }\n  }\n}\n```\n\n2. 이벤트 핸들러 추가:\n```javascript\nfunction handleCellClick(event) {\n  const cell = event.target;\n  if (!cell.classList.contains('cell')) return;\n  \n  const row = parseInt(cell.dataset.row);\n  const col = parseInt(cell.dataset.col);\n  \n  const result = game.revealCell(row, col);\n  updateBoard();\n  \n  if (result === 'gameover') {\n    alert('게임 오버! 지뢰를 밟았습니다.');\n    document.getElementById('restart-btn').textContent = '😵';\n  } else if (result === 'win') {\n    alert('축하합니다! 모든 지뢰를 찾았습니다!');\n    document.getElementById('restart-btn').textContent = '😎';\n  }\n}\n\nfunction handleCellRightClick(event) {\n  event.preventDefault(); // 컨텍스트 메뉴 방지\n  \n  const cell = event.target;\n  if (!cell.classList.contains('cell')) return;\n  \n  const row = parseInt(cell.dataset.row);\n  const col = parseInt(cell.dataset.col);\n  \n  const flagCount = game.toggleFlag(row, col);\n  updateBoard();\n  \n  // 남은 지뢰 수 업데이트\n  document.querySelector('.mine-counter').textContent = game.mineCount - flagCount;\n}\n\nfunction updateBoard() {\n  const boardElement = document.getElementById('game-board');\n  const cells = boardElement.querySelectorAll('.cell');\n  \n  for (let row = 0; row < game.rows; row++) {\n    for (let col = 0; col < game.cols; col++) {\n      const index = row * game.cols + col;\n      const cell = cells[index];\n      const cellData = game.board[row][col];\n      \n      // 셀 상태에 따라 UI 업데이트\n      if (cellData.isRevealed) {\n        cell.classList.add('revealed');\n        \n        if (cellData.isMine) {\n          cell.textContent = '💣';\n          cell.style.backgroundColor = 'red';\n        } else if (cellData.neighborMines > 0) {\n          cell.textContent = cellData.neighborMines;\n          // 숫자에 따라 색상 지정\n          const colors = ['blue', 'green', 'red', 'purple', 'maroon', 'turquoise', 'black', 'gray'];\n          cell.style.color = colors[cellData.neighborMines - 1];\n        }\n      } else if (cellData.isFlagged) {\n        cell.textContent = '🚩';\n      } else {\n        cell.textContent = '';\n        cell.className = 'cell';\n      }\n    }\n  }\n}\n\n// 이벤트 리스너 등록\ndocument.addEventListener('DOMContentLoaded', () => {\n  renderBoard();\n  \n  const boardElement = document.getElementById('game-board');\n  boardElement.addEventListener('click', handleCellClick);\n  boardElement.addEventListener('contextmenu', handleCellRightClick);\n});\n```",
+        "testStrategy": "1. 좌클릭으로 셀이 정상적으로 열리는지 확인\n2. 우클릭으로 깃발이 정상적으로 표시/제거되는지 확인\n3. 빈 셀 클릭 시 주변 셀이 재귀적으로 열리는지 확인\n4. 지뢰 클릭 시 게임 오버가 정상적으로 처리되는지 확인\n5. 모든 안전한 셀을 열었을 때 승리 조건이 정상적으로 처리되는지 확인\n6. 첫 클릭에서 지뢰를 밟지 않는지 확인",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "구현된 MinesweeperGame 클래스 메서드 테스트",
+            "description": "MinesweeperGame 클래스의 revealCell, revealEmptyCells, toggleFlag, revealAllMines 메서드가 올바르게 작동하는지 테스트한다.",
+            "dependencies": [],
+            "details": "1. 각 메서드를 개별적으로 테스트하는 함수 작성\n2. revealCell 메서드 테스트: 첫 클릭 시 지뢰 배치, 지뢰 클릭 시 게임오버, 빈 셀 클릭 시 주변 셀 오픈, 승리 조건 확인\n3. revealEmptyCells 메서드 테스트: 빈 셀 주변이 올바르게 열리는지 확인\n4. toggleFlag 메서드 테스트: 깃발 토글 기능 및 카운터 업데이트 확인\n5. revealAllMines 메서드 테스트: 게임 오버 시 모든 지뢰가 표시되는지 확인\n6. 콘솔에 테스트 결과 출력",
+            "status": "done",
+            "testStrategy": "다양한 게임 상황(첫 클릭, 지뢰 클릭, 빈 셀 클릭, 승리 조건 등)을 시뮬레이션하여 각 메서드의 반환값과 게임 상태 변화를 검증한다."
+          },
+          {
+            "id": 2,
+            "title": "셀 클릭 이벤트 핸들러 구현",
+            "description": "좌클릭으로 셀을 열고 게임 상태를 업데이트하는 이벤트 핸들러를 구현한다.",
+            "dependencies": [],
+            "details": "1. handleCellClick 함수 구현\n2. 클릭된 셀의 row, col 데이터 추출\n3. game.revealCell(row, col) 호출하여 게임 로직 실행\n4. 반환된 결과(continue, gameover, win)에 따라 적절한 처리\n5. 게임 오버 시 알림 표시 및 이모티콘 변경\n6. 승리 시 축하 메시지 표시 및 이모티콘 변경\n7. updateBoard 함수 호출하여 UI 업데이트",
+            "status": "done",
+            "testStrategy": "다양한 셀(빈 셀, 숫자 셀, 지뢰 셀)을 클릭하여 게임 상태 변화와 UI 업데이트가 올바르게 이루어지는지 확인한다."
+          },
+          {
+            "id": 3,
+            "title": "우클릭 깃발 표시 기능 구현",
+            "description": "우클릭으로 셀에 깃발을 표시하거나 제거하는 기능을 구현한다.",
+            "dependencies": [],
+            "details": "1. handleCellRightClick 함수 구현\n2. event.preventDefault()로 기본 컨텍스트 메뉴 방지\n3. 클릭된 셀의 row, col 데이터 추출\n4. game.toggleFlag(row, col) 호출하여 깃발 토글\n5. 반환된 깃발 개수를 사용하여 남은 지뢰 수 카운터 업데이트\n6. updateBoard 함수 호출하여 UI 업데이트",
+            "status": "done",
+            "testStrategy": "여러 셀에 우클릭을 수행하여 깃발이 올바르게 토글되는지, 지뢰 카운터가 정확히 업데이트되는지 확인한다."
+          },
+          {
+            "id": 4,
+            "title": "게임 보드 UI 업데이트 함수 구현",
+            "description": "게임 상태에 따라 보드 UI를 업데이트하는 함수를 구현한다.",
+            "dependencies": [],
+            "details": "1. updateBoard 함수 구현\n2. 게임 보드의 모든 셀을 순회\n3. 각 셀의 상태(isRevealed, isFlagged, isMine, neighborMines)에 따라 UI 업데이트\n4. 열린 셀에 'revealed' 클래스 추가\n5. 지뢰 셀은 💣 이모티콘 표시 및 배경색 변경\n6. 숫자 셀은 주변 지뢰 개수 표시 및 숫자별 색상 적용\n7. 깃발이 표시된 셀은 🚩 이모티콘 표시\n8. 닫힌 셀은 기본 스타일 유지",
+            "status": "done",
+            "testStrategy": "다양한 게임 상태(초기 상태, 일부 셀 오픈, 깃발 표시, 게임 오버 등)에서 UI가 올바르게 표시되는지 확인한다."
+          },
+          {
+            "id": 5,
+            "title": "이벤트 리스너 등록 및 통합 테스트",
+            "description": "DOM이 로드된 후 이벤트 리스너를 등록하고 전체 게임 기능을 통합 테스트한다.",
+            "dependencies": [],
+            "details": "1. DOMContentLoaded 이벤트에 대한 리스너 구현\n2. renderBoard 함수 호출하여 초기 게임 보드 렌더링\n3. 게임 보드 요소에 클릭 이벤트 리스너 등록(handleCellClick)\n4. 게임 보드 요소에 컨텍스트 메뉴 이벤트 리스너 등록(handleCellRightClick)\n5. 재시작 버튼에 클릭 이벤트 리스너 등록\n6. 전체 게임 플레이 흐름 테스트: 셀 열기, 깃발 표시, 빈 셀 클릭 시 재귀적 오픈, 게임 오버, 승리 조건 등",
+            "status": "done",
+            "testStrategy": "실제 게임 플레이를 통해 모든 기능이 유기적으로 작동하는지 확인한다. 특히 첫 클릭 시 지뢰 배치, 빈 셀 클릭 시 재귀적 오픈, 게임 오버 및 승리 조건 등을 중점적으로 테스트한다."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "타이머 및 지뢰 카운터 구현",
+        "description": "게임 시작 시 타이머를 작동시키고, 남은 지뢰 수를 표시하는 기능을 구현한다.",
+        "details": "1. 타이머 및 지뢰 카운터 관련 변수 추가:\n```javascript\nclass MinesweeperGame {\n  constructor(rows = 9, cols = 9, mineCount = 10) {\n    // 기존 코드 유지...\n    this.timer = 0;\n    this.timerInterval = null;\n    this.flagCount = 0;\n  }\n  \n  // 타이머 시작\n  startTimer() {\n    if (this.timerInterval) return;\n    \n    const timerElement = document.querySelector('.timer');\n    this.timer = 0;\n    timerElement.textContent = this.timer;\n    \n    this.timerInterval = setInterval(() => {\n      this.timer++;\n      timerElement.textContent = this.timer;\n      \n      // 999초 제한 (기존 지뢰찾기 게임과 동일)\n      if (this.timer >= 999) {\n        clearInterval(this.timerInterval);\n      }\n    }, 1000);\n  }\n  \n  // 타이머 정지\n  stopTimer() {\n    if (this.timerInterval) {\n      clearInterval(this.timerInterval);\n      this.timerInterval = null;\n    }\n  }\n  \n  // 게임 리셋 시 타이머도 리셋\n  reset() {\n    // 기존 코드 유지...\n    this.stopTimer();\n    this.timer = 0;\n    document.querySelector('.timer').textContent = '0';\n    document.querySelector('.mine-counter').textContent = this.mineCount;\n  }\n  \n  // revealCell 메서드 수정 - 첫 클릭 시 타이머 시작\n  revealCell(row, col) {\n    // 이미 게임이 끝났거나, 이미 열린 셀이거나, 깃발이 꽂힌 셀이면 무시\n    if (this.gameOver || this.board[row][col].isRevealed || this.board[row][col].isFlagged) {\n      return;\n    }\n    \n    // 첫 클릭인 경우 지뢰 배치 및 타이머 시작\n    if (this.firstClick) {\n      this.placeMines(row, col);\n      this.startTimer();\n    }\n    \n    // 기존 코드 유지...\n    \n    // 게임 오버 또는 승리 시 타이머 정지\n    if (result === 'gameover' || result === 'win') {\n      this.stopTimer();\n    }\n    \n    return result;\n  }\n}\n```\n\n2. 지뢰 카운터 초기화 및 업데이트:\n```javascript\n// 초기 렌더링 시 지뢰 카운터 설정\ndocument.addEventListener('DOMContentLoaded', () => {\n  renderBoard();\n  document.querySelector('.mine-counter').textContent = game.mineCount;\n  document.querySelector('.timer').textContent = '0';\n  \n  // 이벤트 리스너 등록...\n});\n\n// 재시작 버튼 이벤트 핸들러 추가\ndocument.getElementById('restart-btn').addEventListener('click', () => {\n  game.reset();\n  renderBoard();\n  document.getElementById('restart-btn').textContent = '😊';\n});\n```",
+        "testStrategy": "1. 첫 클릭 시 타이머가 시작되는지 확인\n2. 타이머가 1초마다 정확히 증가하는지 확인\n3. 게임 오버 또는 승리 시 타이머가 정지되는지 확인\n4. 재시작 시 타이머가 0으로 리셋되는지 확인\n5. 지뢰 카운터가 초기에 총 지뢰 수를 표시하는지 확인\n6. 깃발을 꽂거나 제거할 때 지뢰 카운터가 정확히 업데이트되는지 확인",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "HTML 구조 구현 및 UI 요소 추가",
+            "description": "타이머와 지뢰 카운터를 표시할 HTML 요소를 구현하고 게임 UI에 추가한다.",
+            "dependencies": [],
+            "details": "1. HTML 파일에 타이머와 지뢰 카운터를 표시할 요소 추가\n2. 타이머(.timer)와 지뢰 카운터(.mine-counter) 클래스를 가진 요소 생성\n3. 게임 컨트롤 패널 내에 요소들을 배치\n4. 재시작 버튼(#restart-btn)도 함께 배치\n5. 기본 스타일링 적용하여 게임 상단에 정보 패널 형태로 표시",
+            "status": "done",
+            "testStrategy": "브라우저에서 HTML 렌더링을 확인하고 요소가 올바르게 표시되는지 확인한다."
+          },
+          {
+            "id": 2,
+            "title": "타이머 기능 구현",
+            "description": "게임 시작 시 타이머를 작동시키고 시간을 초 단위로 표시하는 기능을 구현한다.",
+            "dependencies": [],
+            "details": "1. MinesweeperGame 클래스에 timer, timerInterval 변수 추가\n2. startTimer() 메서드 구현: setInterval을 사용하여 1초마다 타이머 증가\n3. stopTimer() 메서드 구현: clearInterval을 사용하여 타이머 중지\n4. 타이머가 999초에 도달하면 자동으로 중지되도록 구현\n5. 타이머 값을 DOM에 표시하는 로직 구현",
+            "status": "done",
+            "testStrategy": "게임 첫 클릭 시 타이머가 시작되는지, 초 단위로 올바르게 증가하는지, 999초에 도달하면 멈추는지 확인한다."
+          },
+          {
+            "id": 3,
+            "title": "지뢰 카운터 기능 구현",
+            "description": "남은 지뢰 수를 표시하고 깃발을 설치/제거할 때마다 카운터를 업데이트하는 기능을 구현한다.",
+            "dependencies": [],
+            "details": "1. MinesweeperGame 클래스에 flagCount 변수 추가\n2. toggleFlag() 메서드 수정: 깃발 설치/제거 시 flagCount 업데이트\n3. 남은 지뢰 수(mineCount - flagCount) 계산 로직 구현\n4. 지뢰 카운터 DOM 요소 업데이트 로직 추가\n5. 음수 값도 표시할 수 있도록 구현(깃발을 실제 지뢰보다 많이 설치한 경우)",
+            "status": "done",
+            "testStrategy": "깃발을 설치/제거할 때마다 지뢰 카운터가 올바르게 업데이트되는지 확인한다."
+          },
+          {
+            "id": 4,
+            "title": "게임 상태 변경 시 타이머 제어 기능 구현",
+            "description": "게임 시작, 종료, 승리, 재시작 등 상태 변경 시 타이머를 적절히 제어하는 기능을 구현한다.",
+            "dependencies": [],
+            "details": "1. revealCell() 메서드 수정: 첫 클릭 시 타이머 시작 로직 추가\n2. 게임 오버 또는 승리 시 타이머 정지 로직 추가\n3. reset() 메서드 수정: 타이머 초기화 및 정지 로직 추가\n4. 재시작 버튼 클릭 시 타이머 리셋 로직 구현\n5. 게임 상태에 따라 타이머 동작을 제어하는 조건문 추가",
+            "status": "done",
+            "testStrategy": "게임 시작, 종료, 승리, 재시작 시 타이머가 적절히 시작/정지/초기화되는지 확인한다."
+          },
+          {
+            "id": 5,
+            "title": "이벤트 핸들러 및 초기화 로직 통합",
+            "description": "타이머와 지뢰 카운터 기능을 게임의 다른 부분과 통합하고 초기화 로직을 구현한다.",
+            "dependencies": [],
+            "details": "1. DOMContentLoaded 이벤트 핸들러에 타이머와 지뢰 카운터 초기화 코드 추가\n2. 게임 보드 렌더링 함수와 타이머/카운터 업데이트 로직 연결\n3. 재시작 버튼 이벤트 핸들러에 타이머/카운터 리셋 로직 추가\n4. 게임 난이도 변경 시 타이머/카운터 초기화 로직 구현\n5. 모든 게임 상태 변화에 따른 UI 업데이트 로직 통합",
+            "status": "done",
+            "testStrategy": "게임의 전체 흐름에서 타이머와 지뢰 카운터가 올바르게 작동하는지 확인한다. 특히 게임 시작, 재시작, 난이도 변경 시 정상 동작하는지 테스트한다."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "게임 난이도 설정 기능 구현",
+        "description": "초급(9x9, 지뢰 10개), 중급(16x16, 지뢰 40개), 고급(16x30, 지뢰 99개) 등 난이도를 선택할 수 있는 기능을 구현한다.",
+        "details": "1. 난이도 선택 UI 추가 (index.html):\n```html\n<div class=\"game-container\">\n  <div class=\"difficulty-selector\">\n    <button id=\"beginner-btn\">초급</button>\n    <button id=\"intermediate-btn\">중급</button>\n    <button id=\"expert-btn\">고급</button>\n    <button id=\"custom-btn\">사용자 정의</button>\n  </div>\n  <!-- 기존 코드 유지... -->\n</div>\n```\n\n2. 난이도 선택 CSS 추가 (styles.css):\n```css\n.difficulty-selector {\n  display: flex;\n  justify-content: center;\n  margin-bottom: 10px;\n  padding: 5px;\n  background-color: #c0c0c0;\n  border-bottom: 2px solid #808080;\n}\n\n.difficulty-selector button {\n  margin: 0 5px;\n  padding: 5px 10px;\n  background-color: #c0c0c0;\n  border: 2px outset #fff;\n  cursor: pointer;\n}\n\n.difficulty-selector button:active {\n  border-style: inset;\n}\n\n.custom-dialog {\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background-color: #c0c0c0;\n  border: 2px outset #fff;\n  padding: 20px;\n  z-index: 100;\n}\n\n.custom-dialog input {\n  width: 50px;\n  margin: 5px;\n}\n```\n\n3. 난이도 설정 JavaScript 코드 추가 (game.js):\n```javascript\n// 난이도 설정\nconst DIFFICULTY = {\n  BEGINNER: { rows: 9, cols: 9, mines: 10 },\n  INTERMEDIATE: { rows: 16, cols: 16, mines: 40 },\n  EXPERT: { rows: 16, cols: 30, mines: 99 }\n};\n\n// 난이도 변경 함수\nfunction changeDifficulty(rows, cols, mines) {\n  game.resizeBoard(rows, cols, mines);\n  renderBoard();\n  document.querySelector('.mine-counter').textContent = mines;\n  document.querySelector('.timer').textContent = '0';\n  document.getElementById('restart-btn').textContent = '😊';\n  \n  // 창 크기 조정\n  const width = cols * 30 + 40; // 셀 너비 + 패딩\n  const height = rows * 30 + 100; // 셀 높이 + 헤더 + 패딩\n  window.resizeTo(width, height);\n}\n\n// 난이도 버튼 이벤트 리스너\ndocument.addEventListener('DOMContentLoaded', () => {\n  // 기존 코드 유지...\n  \n  // 난이도 버튼 이벤트 리스너 등록\n  document.getElementById('beginner-btn').addEventListener('click', () => {\n    const { rows, cols, mines } = DIFFICULTY.BEGINNER;\n    changeDifficulty(rows, cols, mines);\n  });\n  \n  document.getElementById('intermediate-btn').addEventListener('click', () => {\n    const { rows, cols, mines } = DIFFICULTY.INTERMEDIATE;\n    changeDifficulty(rows, cols, mines);\n  });\n  \n  document.getElementById('expert-btn').addEventListener('click', () => {\n    const { rows, cols, mines } = DIFFICULTY.EXPERT;\n    changeDifficulty(rows, cols, mines);\n  });\n  \n  document.getElementById('custom-btn').addEventListener('click', () => {\n    showCustomDialog();\n  });\n});\n\n// 사용자 정의 난이도 대화상자\nfunction showCustomDialog() {\n  const dialog = document.createElement('div');\n  dialog.className = 'custom-dialog';\n  dialog.innerHTML = `\n    <h3>사용자 정의 설정</h3>\n    <div>\n      <label>행: <input type=\"number\" id=\"custom-rows\" min=\"5\" max=\"24\" value=\"9\"></label>\n    </div>\n    <div>\n      <label>열: <input type=\"number\" id=\"custom-cols\" min=\"5\" max=\"30\" value=\"9\"></label>\n    </div>\n    <div>\n      <label>지뢰 수: <input type=\"number\" id=\"custom-mines\" min=\"1\" max=\"200\" value=\"10\"></label>\n    </div>\n    <div style=\"margin-top: 10px;\">\n      <button id=\"custom-apply\">적용</button>\n      <button id=\"custom-cancel\">취소</button>\n    </div>\n  `;\n  \n  document.body.appendChild(dialog);\n  \n  document.getElementById('custom-apply').addEventListener('click', () => {\n    const rows = parseInt(document.getElementById('custom-rows').value);\n    const cols = parseInt(document.getElementById('custom-cols').value);\n    let mines = parseInt(document.getElementById('custom-mines').value);\n    \n    // 지뢰 수 유효성 검사 (전체 셀의 1/3 이하로 제한)\n    const maxMines = Math.floor(rows * cols / 3);\n    mines = Math.min(mines, maxMines);\n    \n    changeDifficulty(rows, cols, mines);\n    document.body.removeChild(dialog);\n  });\n  \n  document.getElementById('custom-cancel').addEventListener('click', () => {\n    document.body.removeChild(dialog);\n  });\n}\n```",
+        "testStrategy": "1. 각 난이도 버튼 클릭 시 게임 보드가 올바른 크기로 변경되는지 확인\n2. 난이도 변경 시 지뢰 수가 올바르게 설정되는지 확인\n3. 사용자 정의 설정에서 유효한 값을 입력했을 때 정상적으로 적용되는지 확인\n4. 사용자 정의 설정에서 지뢰 수 제한이 제대로 적용되는지 확인\n5. 난이도 변경 시 게임이 재시작되고 타이머와 지뢰 카운터가 리셋되는지 확인\n6. 창 크기가 게임 보드 크기에 맞게 조정되는지 확인",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "HTML 난이도 선택 UI 구현",
+            "description": "게임 난이도를 선택할 수 있는 버튼 UI를 HTML에 추가합니다.",
+            "dependencies": [],
+            "details": "index.html 파일에 난이도 선택 버튼(초급, 중급, 고급, 사용자 정의)을 포함하는 div 요소를 추가합니다. 각 버튼에는 적절한 id를 부여하여 JavaScript에서 참조할 수 있도록 합니다.",
+            "status": "done",
+            "testStrategy": "브라우저에서 페이지를 열어 난이도 선택 버튼이 올바르게 표시되는지 확인합니다."
+          },
+          {
+            "id": 2,
+            "title": "CSS 스타일 적용",
+            "description": "난이도 선택 UI와 사용자 정의 대화상자에 대한 CSS 스타일을 구현합니다.",
+            "dependencies": [
+              1
+            ],
+            "details": "styles.css 파일에 난이도 선택 버튼과 사용자 정의 대화상자의 스타일을 추가합니다. 버튼의 hover, active 상태와 대화상자의 위치, 배경색, 테두리 등을 설정합니다.",
+            "status": "done",
+            "testStrategy": "각 버튼에 마우스를 올리거나 클릭했을 때 스타일이 적절하게 변경되는지 확인합니다."
+          },
+          {
+            "id": 3,
+            "title": "난이도 설정 상수 및 변경 함수 구현",
+            "description": "각 난이도별 설정값(행, 열, 지뢰 수)을 정의하고 난이도 변경 함수를 구현합니다.",
+            "dependencies": [],
+            "details": "game.js 파일에 DIFFICULTY 객체를 추가하여 초급, 중급, 고급 난이도의 설정값을 정의합니다. changeDifficulty 함수를 구현하여 게임 보드의 크기와 지뢰 수를 변경하고, UI 요소(지뢰 카운터, 타이머, 재시작 버튼)를 초기화합니다. 창 크기도 보드 크기에 맞게 조정합니다.",
+            "status": "done",
+            "testStrategy": "각 난이도 설정값이 올바르게 정의되었는지 확인하고, changeDifficulty 함수가 게임 상태를 적절히 변경하는지 테스트합니다."
+          },
+          {
+            "id": 4,
+            "title": "난이도 버튼 이벤트 리스너 구현",
+            "description": "난이도 선택 버튼에 클릭 이벤트 리스너를 추가하여 난이도 변경 기능을 연결합니다.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "DOMContentLoaded 이벤트 리스너 내에서 각 난이도 버튼(초급, 중급, 고급, 사용자 정의)에 클릭 이벤트 리스너를 등록합니다. 각 버튼 클릭 시 해당 난이도의 설정값을 가져와 changeDifficulty 함수를 호출하거나, 사용자 정의 버튼의 경우 showCustomDialog 함수를 호출합니다.",
+            "status": "done",
+            "testStrategy": "각 난이도 버튼을 클릭하여 게임 보드가 해당 난이도로 변경되는지 확인합니다."
+          },
+          {
+            "id": 5,
+            "title": "사용자 정의 난이도 대화상자 구현",
+            "description": "사용자가 직접 행, 열, 지뢰 수를 설정할 수 있는 대화상자를 구현합니다.",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "showCustomDialog 함수를 구현하여 사용자 정의 난이도 설정을 위한 대화상자를 생성합니다. 대화상자에는 행, 열, 지뢰 수를 입력할 수 있는 필드와 '적용', '취소' 버튼을 포함합니다. 적용 버튼 클릭 시 입력값의 유효성을 검사하고(지뢰 수는 전체 셀의 1/3 이하로 제한), changeDifficulty 함수를 호출하여 설정을 적용합니다. 취소 버튼 클릭 시 대화상자를 닫습니다.",
+            "status": "done",
+            "testStrategy": "사용자 정의 버튼을 클릭하여 대화상자가 표시되는지 확인하고, 다양한 입력값으로 테스트하여 유효성 검사와 난이도 변경이 올바르게 작동하는지 확인합니다."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "게임 결과 화면 및 애니메이션 구현",
+        "description": "게임 승리 또는 패배 시 결과를 시각적으로 표시하고, 간단한 애니메이션 효과를 추가한다.",
+        "details": "1. 게임 결과 표시 CSS 추가 (styles.css):\n```css\n@keyframes reveal {\n  0% { transform: scale(0.1); opacity: 0; }\n  50% { transform: scale(1.2); opacity: 0.5; }\n  100% { transform: scale(1); opacity: 1; }\n}\n\n@keyframes shake {\n  0%, 100% { transform: translateX(0); }\n  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }\n  20%, 40%, 60%, 80% { transform: translateX(5px); }\n}\n\n.cell.mine-exploded {\n  background-color: red !important;\n  animation: shake 0.5s;\n}\n\n.cell.revealed {\n  animation: reveal 0.2s;\n}\n\n.game-result {\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background-color: rgba(0, 0, 0, 0.8);\n  color: white;\n  padding: 20px;\n  border-radius: 10px;\n  text-align: center;\n  z-index: 100;\n}\n\n.game-result h2 {\n  margin-top: 0;\n}\n\n.game-result button {\n  margin-top: 15px;\n  padding: 8px 15px;\n  background-color: #4CAF50;\n  border: none;\n  color: white;\n  cursor: pointer;\n  border-radius: 4px;\n}\n\n.game-result button:hover {\n  background-color: #45a049;\n}\n\n.game-result .stats {\n  margin: 15px 0;\n  font-size: 18px;\n}\n```\n\n2. 게임 결과 표시 함수 추가 (game.js):\n```javascript\n// 게임 결과 표시 함수\nfunction showGameResult(isWin) {\n  const resultElement = document.createElement('div');\n  resultElement.className = 'game-result';\n  \n  if (isWin) {\n    resultElement.innerHTML = `\n      <h2>축하합니다! 승리했습니다!</h2>\n      <div class=\"stats\">\n        <div>소요 시간: ${game.timer}초</div>\n        <div>난이도: ${getDifficultyName()}</div>\n      </div>\n      <button id=\"play-again\">다시 플레이</button>\n    `;\n  } else {\n    resultElement.innerHTML = `\n      <h2>게임 오버!</h2>\n      <div class=\"stats\">\n        <div>소요 시간: ${game.timer}초</div>\n        <div>난이도: ${getDifficultyName()}</div>\n      </div>\n      <button id=\"try-again\">다시 시도</button>\n    `;\n  }\n  \n  document.body.appendChild(resultElement);\n  \n  // 다시 플레이 버튼 이벤트 리스너\n  document.getElementById(isWin ? 'play-again' : 'try-again').addEventListener('click', () => {\n    document.body.removeChild(resultElement);\n    game.reset();\n    renderBoard();\n    document.getElementById('restart-btn').textContent = '😊';\n  });\n}\n\n// 현재 난이도 이름 반환 함수\nfunction getDifficultyName() {\n  const { rows, cols, mines } = game;\n  \n  if (rows === DIFFICULTY.BEGINNER.rows && cols === DIFFICULTY.BEGINNER.cols && mines === DIFFICULTY.BEGINNER.mines) {\n    return '초급';\n  } else if (rows === DIFFICULTY.INTERMEDIATE.rows && cols === DIFFICULTY.INTERMEDIATE.cols && mines === DIFFICULTY.INTERMEDIATE.mines) {\n    return '중급';\n  } else if (rows === DIFFICULTY.EXPERT.rows && cols === DIFFICULTY.EXPERT.cols && mines === DIFFICULTY.EXPERT.mines) {\n    return '고급';\n  } else {\n    return '사용자 정의';\n  }\n}\n\n// revealCell 메서드 수정 - 게임 결과 표시 추가\nfunction handleCellClick(event) {\n  // 기존 코드 유지...\n  \n  const result = game.revealCell(row, col);\n  updateBoard();\n  \n  if (result === 'gameover') {\n    // 클릭한 지뢰 셀에 특별한 스타일 적용\n    cell.classList.add('mine-exploded');\n    document.getElementById('restart-btn').textContent = '😵';\n    \n    // 약간의 지연 후 결과 화면 표시\n    setTimeout(() => {\n      showGameResult(false);\n    }, 1000);\n  } else if (result === 'win') {\n    document.getElementById('restart-btn').textContent = '😎';\n    \n    // 약간의 지연 후 결과 화면 표시\n    setTimeout(() => {\n      showGameResult(true);\n    }, 1000);\n  }\n}\n```\n\n3. 애니메이션 효과를 위한 updateBoard 함수 수정:\n```javascript\nfunction updateBoard() {\n  const boardElement = document.getElementById('game-board');\n  const cells = boardElement.querySelectorAll('.cell');\n  \n  for (let row = 0; row < game.rows; row++) {\n    for (let col = 0; col < game.cols; col++) {\n      const index = row * game.cols + col;\n      const cell = cells[index];\n      const cellData = game.board[row][col];\n      \n      // 이전 상태 저장\n      const wasRevealed = cell.classList.contains('revealed');\n      \n      // 셀 상태에 따라 UI 업데이트\n      if (cellData.isRevealed) {\n        // 새로 열린 셀에만 애니메이션 적용\n        if (!wasRevealed) {\n          cell.classList.add('revealed');\n        }\n        \n        if (cellData.isMine) {\n          cell.textContent = '💣';\n          cell.style.backgroundColor = '#ffcccc';\n        } else if (cellData.neighborMines > 0) {\n          cell.textContent = cellData.neighborMines;\n          // 숫자에 따라 색상 지정\n          const colors = ['blue', 'green', 'red', 'purple', 'maroon', 'turquoise', 'black', 'gray'];\n          cell.style.color = colors[cellData.neighborMines - 1];\n        }\n      } else if (cellData.isFlagged) {\n        cell.textContent = '🚩';\n      } else {\n        cell.textContent = '';\n        cell.className = 'cell';\n        cell.style.color = '';\n        cell.style.backgroundColor = '';\n      }\n    }\n  }\n}\n```",
+        "testStrategy": "1. 게임 승리 시 승리 화면이 정상적으로 표시되는지 확인\n2. 게임 패배 시 패배 화면이 정상적으로 표시되는지 확인\n3. 결과 화면에 소요 시간과 난이도가 정확히 표시되는지 확인\n4. '다시 플레이' 버튼 클릭 시 게임이 정상적으로 재시작되는지 확인\n5. 셀 오픈 애니메이션이 자연스럽게 작동하는지 확인\n6. 지뢰 폭발 애니메이션이 정상적으로 표시되는지 확인",
+        "priority": "medium",
+        "dependencies": [
+          5,
+          6
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "게임 결과 화면 컴포넌트 구현",
+            "description": "승리 또는 패배 시 표시될 결과 화면 컴포넌트를 구현합니다. 결과 화면에는 게임 결과(승리/패배), 소요 시간, 난이도 정보와 재시작 버튼이 포함됩니다.",
+            "dependencies": [],
+            "details": "1. showGameResult 함수를 구현합니다:\n- 매개변수로 isWin(boolean)을 받아 승리/패배 여부 확인\n- 결과 화면 DOM 요소 생성 및 스타일 적용\n- 게임 통계(소요 시간, 난이도) 표시\n- 재시작 버튼 추가\n2. getDifficultyName 함수를 구현하여 현재 게임 난이도 이름을 반환합니다.\n3. 재시작 버튼에 이벤트 리스너를 추가하여 게임을 초기화하고 결과 화면을 제거합니다.",
+            "status": "done",
+            "testStrategy": "다양한 게임 결과 시나리오(승리/패배)에서 결과 화면이 올바르게 표시되는지 확인합니다. 재시작 버튼이 정상적으로 작동하는지 테스트합니다."
+          },
+          {
+            "id": 2,
+            "title": "셀 애니메이션 효과 구현",
+            "description": "게임 보드의 셀에 애니메이션 효과를 추가합니다. 셀이 열릴 때와 지뢰가 폭발할 때 각각 다른 애니메이션을 적용합니다.",
+            "dependencies": [],
+            "details": "1. CSS에 애니메이션 키프레임 정의:\n- reveal 애니메이션: 셀이 열릴 때 확대되며 나타나는 효과\n- shake 애니메이션: 지뢰가 폭발할 때 흔들리는 효과\n2. 관련 CSS 클래스 구현:\n- .cell.mine-exploded: 폭발한 지뢰 셀 스타일 및 애니메이션\n- .cell.revealed: 열린 셀 애니메이션\n3. updateBoard 함수에서 새로 열린 셀에만 애니메이션 적용하도록 로직 추가",
+            "status": "done",
+            "testStrategy": "다양한 셀을 클릭하여 애니메이션이 자연스럽게 작동하는지 확인합니다. 특히 여러 셀을 빠르게 연속해서 열 때 애니메이션이 올바르게 적용되는지 테스트합니다."
+          },
+          {
+            "id": 3,
+            "title": "게임 결과 감지 및 처리 로직 구현",
+            "description": "게임의 승리 또는 패배 조건을 감지하고, 해당 이벤트 발생 시 적절한 결과 화면과 애니메이션을 표시하는 로직을 구현합니다.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. handleCellClick 함수를 수정하여 게임 결과 처리:\n- revealCell 메서드의 반환값('gameover', 'win', 또는 undefined)에 따라 처리\n- 게임 오버 시: 클릭한 지뢰 셀에 'mine-exploded' 클래스 추가, 이모티콘 변경(😵)\n- 승리 시: 이모티콘 변경(😎)\n2. setTimeout을 사용하여 애니메이션 완료 후 결과 화면 표시(약 1초 지연)\n3. 게임 상태에 따라 적절한 showGameResult 함수 호출",
+            "status": "done",
+            "testStrategy": "지뢰를 클릭하여 게임 오버 시나리오와 모든 안전한 셀을 열어 승리 시나리오를 테스트합니다. 애니메이션과 결과 화면이 적절한 타이밍에 표시되는지 확인합니다."
+          },
+          {
+            "id": 4,
+            "title": "셀 상태 시각화 개선",
+            "description": "게임 보드의 셀 상태(열림, 깃발, 지뢰 등)에 따라 시각적 표현을 개선하고, 숫자에 따른 색상 코드를 구현합니다.",
+            "dependencies": [
+              2
+            ],
+            "details": "1. updateBoard 함수를 수정하여 셀 상태에 따른 시각화 개선:\n- 열린 셀: 'revealed' 클래스 추가 및 애니메이션 적용\n- 지뢰 셀: 💣 이모티콘 표시 및 배경색 변경(#ffcccc)\n- 숫자 셀: 주변 지뢰 수에 따라 다른 색상 적용\n  - 색상 배열: ['blue', 'green', 'red', 'purple', 'maroon', 'turquoise', 'black', 'gray']\n- 깃발 셀: 🚩 이모티콘 표시\n2. 이전 상태와 비교하여 새로 열린 셀에만 애니메이션 적용하는 로직 구현",
+            "status": "done",
+            "testStrategy": "다양한 셀 상태(숫자, 지뢰, 깃발)에서 시각적 표현이 올바르게 적용되는지 확인합니다. 특히 숫자 색상이 주변 지뢰 수에 따라 정확히 표시되는지 테스트합니다."
+          },
+          {
+            "id": 5,
+            "title": "게임 재시작 및 상태 초기화 기능 구현",
+            "description": "게임 결과 화면에서 재시작 버튼 클릭 시 게임을 초기화하고 새 게임을 시작하는 기능을 구현합니다.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "1. 게임 결과 화면의 재시작 버튼에 이벤트 리스너 추가:\n- 결과 화면 DOM 요소 제거\n- game.reset() 호출하여 게임 상태 초기화\n- renderBoard() 호출하여 게임 보드 다시 그리기\n- 재시작 버튼 이모티콘 초기화(😊)\n2. 게임 난이도 유지하면서 재시작하는 로직 구현\n3. 타이머 및 지뢰 카운터 초기화 로직 추가\n4. 게임 재시작 시 모든 애니메이션 상태 초기화",
+            "status": "done",
+            "testStrategy": "게임 승리와 패배 후 각각 재시작 버튼을 클릭하여 게임이 올바르게 초기화되는지 확인합니다. 타이머, 지뢰 카운터, 게임 보드가 모두 정상적으로 초기화되는지 테스트합니다."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "게임 상태 저장 및 불러오기 기능 구현",
+        "description": "현재 게임 상태를 로컬 스토리지에 저장하고, 앱 재시작 시 이전 게임을 이어서 할 수 있는 기능을 구현한다.",
+        "details": "1. 게임 상태 저장 및 불러오기 메서드 추가:\n```javascript\nclass MinesweeperGame {\n  // 기존 코드 유지...\n  \n  // 게임 상태 저장\n  saveGame() {\n    const gameState = {\n      rows: this.rows,\n      cols: this.cols,\n      mineCount: this.mineCount,\n      board: this.board,\n      revealed: this.revealed,\n      gameOver: this.gameOver,\n      flagCount: this.flagCount,\n      firstClick: this.firstClick,\n      timer: this.timer\n    };\n    \n    localStorage.setItem('minesweeper_game', JSON.stringify(gameState));\n  }\n  \n  // 게임 상태 불러오기\n  loadGame() {\n    const savedState = localStorage.getItem('minesweeper_game');\n    if (!savedState) return false;\n    \n    try {\n      const gameState = JSON.parse(savedState);\n      \n      this.rows = gameState.rows;\n      this.cols = gameState.cols;\n      this.mineCount = gameState.mineCount;\n      this.board = gameState.board;\n      this.revealed = gameState.revealed;\n      this.gameOver = gameState.gameOver;\n      this.flagCount = gameState.flagCount;\n      this.firstClick = gameState.firstClick;\n      this.timer = gameState.timer;\n      \n      // 타이머 재시작 (게임이 진행 중인 경우)\n      if (!this.gameOver && !this.firstClick) {\n        this.startTimer();\n      }\n      \n      return true;\n    } catch (error) {\n      console.error('게임 상태 불러오기 실패:', error);\n      return false;\n    }\n  }\n  \n  // 저장된 게임 삭제\n  clearSavedGame() {\n    localStorage.removeItem('minesweeper_game');\n  }\n}\n```\n\n2. 자동 저장 기능 추가:\n```javascript\n// 주기적으로 게임 상태 저장 (5초마다)\nsetInterval(() => {\n  if (!game.gameOver && !game.firstClick) {\n    game.saveGame();\n  }\n}, 5000);\n\n// 페이지 언로드 시 게임 상태 저장\nwindow.addEventListener('beforeunload', () => {\n  if (!game.gameOver) {\n    game.saveGame();\n  }\n});\n```\n\n3. 게임 시작 시 저장된 게임 불러오기:\n```javascript\ndocument.addEventListener('DOMContentLoaded', () => {\n  // 저장된 게임이 있으면 불러오기\n  const hasSavedGame = game.loadGame();\n  \n  if (hasSavedGame) {\n    renderBoard();\n    updateBoard();\n    document.querySelector('.mine-counter').textContent = game.mineCount - game.flagCount;\n    document.querySelector('.timer').textContent = game.timer;\n    \n    // 게임 상태에 따라 표정 이모티콘 설정\n    if (game.gameOver) {\n      document.getElementById('restart-btn').textContent = '😵';\n    } else {\n      document.getElementById('restart-btn').textContent = '😊';\n    }\n  } else {\n    renderBoard();\n    document.querySelector('.mine-counter').textContent = game.mineCount;\n    document.querySelector('.timer').textContent = '0';\n  }\n  \n  // 이벤트 리스너 등록...\n});\n\n// 재시작 버튼 클릭 시 저장된 게임 삭제\ndocument.getElementById('restart-btn').addEventListener('click', () => {\n  game.clearSavedGame();\n  game.reset();\n  renderBoard();\n  document.getElementById('restart-btn').textContent = '😊';\n});\n\n// 난이도 변경 시 저장된 게임 삭제\nfunction changeDifficulty(rows, cols, mines) {\n  game.clearSavedGame();\n  // 기존 코드 유지...\n}\n```\n\n4. 저장된 게임 불러오기/새 게임 시작 선택 대화상자 추가:\n```javascript\nfunction showLoadGameDialog() {\n  const dialog = document.createElement('div');\n  dialog.className = 'custom-dialog';\n  dialog.innerHTML = `\n    <h3>저장된 게임이 있습니다</h3>\n    <p>이전 게임을 계속하시겠습니까?</p>\n    <div style=\"margin-top: 10px;\">\n      <button id=\"load-game-btn\">이어하기</button>\n      <button id=\"new-game-btn\">새 게임</button>\n    </div>\n  `;\n  \n  document.body.appendChild(dialog);\n  \n  document.getElementById('load-game-btn').addEventListener('click', () => {\n    game.loadGame();\n    renderBoard();\n    updateBoard();\n    document.querySelector('.mine-counter').textContent = game.mineCount - game.flagCount;\n    document.querySelector('.timer').textContent = game.timer;\n    document.body.removeChild(dialog);\n  });\n  \n  document.getElementById('new-game-btn').addEventListener('click', () => {\n    game.clearSavedGame();\n    game.reset();\n    renderBoard();\n    document.body.removeChild(dialog);\n  });\n}\n\ndocument.addEventListener('DOMContentLoaded', () => {\n  // 저장된 게임이 있는지 확인\n  const savedState = localStorage.getItem('minesweeper_game');\n  \n  if (savedState) {\n    showLoadGameDialog();\n  } else {\n    renderBoard();\n    document.querySelector('.mine-counter').textContent = game.mineCount;\n    document.querySelector('.timer').textContent = '0';\n  }\n  \n  // 이벤트 리스너 등록...\n});\n```",
+        "testStrategy": "1. 게임 진행 중 페이지를 새로고침한 후 이전 게임 상태가 정상적으로 불러와지는지 확인\n2. 게임 상태 저장 시 보드 상태, 타이머, 지뢰 카운터 등이 모두 정확히 저장되는지 확인\n3. 저장된 게임이 있을 때 '이어하기'와 '새 게임' 선택 대화상자가 정상적으로 표시되는지 확인\n4. '이어하기' 선택 시 게임이 정확히 이전 상태로 복원되는지 확인\n5. '새 게임' 선택 시 저장된 게임이 삭제되고 새 게임이 시작되는지 확인\n6. 난이도 변경 시 저장된 게임이 삭제되는지 확인",
+        "priority": "low",
+        "dependencies": [
+          5,
+          6
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "게임 상태 데이터 구조 정의 및 저장 메서드 구현",
+            "description": "게임 상태를 저장하기 위한 데이터 구조를 정의하고 MinesweeperGame 클래스에 saveGame 메서드를 구현합니다.",
+            "dependencies": [],
+            "details": "MinesweeperGame 클래스에 saveGame 메서드를 구현합니다. 저장할 게임 상태 데이터는 rows, cols, mineCount, board, revealed, gameOver, flagCount, firstClick, timer 등의 속성을 포함해야 합니다. localStorage.setItem('minesweeper_game', JSON.stringify(gameState))를 사용하여 게임 상태를 JSON 형태로 변환하여 로컬 스토리지에 저장합니다.",
+            "status": "done",
+            "testStrategy": "localStorage에 데이터가 올바르게 저장되는지 확인하고, 저장된 JSON 데이터의 구조가 예상대로인지 검증합니다."
+          },
+          {
+            "id": 2,
+            "title": "게임 상태 불러오기 및 초기화 메서드 구현",
+            "description": "저장된 게임 상태를 로컬 스토리지에서 불러오고 게임을 복원하는 loadGame 메서드와 저장된 게임을 삭제하는 clearSavedGame 메서드를 구현합니다.",
+            "dependencies": [],
+            "details": "MinesweeperGame 클래스에 loadGame 메서드를 구현합니다. localStorage.getItem('minesweeper_game')을 사용하여 저장된 게임 상태를 불러오고, JSON.parse를 통해 객체로 변환합니다. 불러온 데이터로 게임 상태(rows, cols, mineCount, board, revealed 등)를 복원합니다. 게임이 진행 중이었다면 타이머를 재시작합니다. 또한 clearSavedGame 메서드를 구현하여 localStorage.removeItem('minesweeper_game')으로 저장된 게임을 삭제할 수 있도록 합니다.",
+            "status": "done",
+            "testStrategy": "저장된 게임 상태를 정확히 불러오는지 확인하고, 게임 상태가 없을 때 적절히 처리되는지 테스트합니다. 또한 clearSavedGame 메서드가 저장된 게임을 제대로 삭제하는지 확인합니다."
+          },
+          {
+            "id": 3,
+            "title": "자동 저장 기능 구현",
+            "description": "게임 진행 중 주기적으로 상태를 저장하고, 페이지 언로드 시에도 게임 상태를 저장하는 기능을 구현합니다.",
+            "dependencies": [],
+            "details": "setInterval을 사용하여 5초마다 게임 상태를 자동 저장하는 기능을 구현합니다. 게임이 진행 중일 때만(gameOver가 false이고 firstClick이 false일 때) 저장이 이루어지도록 합니다. 또한 window.addEventListener('beforeunload', ...)를 사용하여 페이지를 닫거나 새로고침할 때 게임 상태를 저장합니다. 이 이벤트 리스너도 게임이 진행 중일 때만 저장 기능이 작동하도록 구현합니다.",
+            "status": "done",
+            "testStrategy": "타이머가 작동하는 동안 주기적으로 저장이 이루어지는지 확인하고, 페이지 새로고침 후에도 게임 상태가 유지되는지 테스트합니다."
+          },
+          {
+            "id": 4,
+            "title": "게임 시작 시 저장된 게임 불러오기 구현",
+            "description": "앱 시작 시 저장된 게임이 있는지 확인하고, 있다면 이를 불러와 게임 화면을 복원하는 기능을 구현합니다.",
+            "dependencies": [],
+            "details": "DOMContentLoaded 이벤트 리스너 내에서 game.loadGame()을 호출하여 저장된 게임이 있는지 확인합니다. 저장된 게임이 있으면(hasSavedGame이 true) 게임 보드를 렌더링하고 지뢰 카운터, 타이머, 이모티콘 등의 UI 요소를 게임 상태에 맞게 업데이트합니다. 재시작 버튼과 난이도 변경 기능에 game.clearSavedGame() 호출을 추가하여 새 게임 시작 시 저장된 게임이 삭제되도록 합니다.",
+            "status": "done",
+            "testStrategy": "앱 시작 시 저장된 게임이 있을 때와 없을 때 각각 올바르게 동작하는지 확인합니다. 재시작 버튼과 난이도 변경 시 저장된 게임이 제대로 삭제되는지 테스트합니다."
+          },
+          {
+            "id": 5,
+            "title": "저장된 게임 불러오기/새 게임 시작 선택 대화상자 구현",
+            "description": "앱 시작 시 저장된 게임이 있을 경우, 사용자에게 이전 게임을 계속할지 새 게임을 시작할지 선택할 수 있는 대화상자를 표시합니다.",
+            "dependencies": [],
+            "details": "showLoadGameDialog 함수를 구현하여 저장된 게임이 있을 때 사용자에게 선택 대화상자를 표시합니다. 대화상자는 '이어하기'와 '새 게임' 버튼을 포함하며, '이어하기' 버튼 클릭 시 game.loadGame()을 호출하여 저장된 게임을 불러오고, '새 게임' 버튼 클릭 시 game.clearSavedGame()과 game.reset()을 호출하여 새 게임을 시작합니다. DOMContentLoaded 이벤트 리스너에서 localStorage.getItem('minesweeper_game')을 통해 저장된 게임이 있는지 확인하고, 있으면 showLoadGameDialog 함수를 호출합니다.",
+            "status": "done",
+            "testStrategy": "대화상자가 올바르게 표시되는지, '이어하기'와 '새 게임' 버튼이 각각 기대한 대로 동작하는지 확인합니다. 특히 '이어하기' 선택 시 게임 상태가 정확히 복원되는지, '새 게임' 선택 시 저장된 게임이 삭제되고 새 게임이 시작되는지 테스트합니다."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "게임 통계 및 기록 관리 기능 구현",
+        "description": "게임 승리 시 소요 시간, 난이도 등의 기록을 저장하고 통계를 보여주는 기능을 구현한다.",
+        "details": "1. 게임 통계 관리 클래스 추가:\n```javascript\nclass GameStatistics {\n  constructor() {\n    this.stats = this.loadStats();\n  }\n  \n  // 통계 불러오기\n  loadStats() {\n    const savedStats = localStorage.getItem('minesweeper_stats');\n    return savedStats ? JSON.parse(savedStats) : {\n      beginner: { played: 0, won: 0, bestTime: null },\n      intermediate: { played: 0, won: 0, bestTime: null },\n      expert: { played: 0, won: 0, bestTime: null },\n      custom: { played: 0, won: 0 }\n    };\n  }\n  \n  // 통계 저장\n  saveStats() {\n    localStorage.setItem('minesweeper_stats', JSON.stringify(this.stats));\n  }\n  \n  // 게임 시작 기록\n  recordGameStart(difficulty) {\n    this.stats[difficulty].played++;\n    this.saveStats();\n  }\n  \n  // 게임 승리 기록\n  recordGameWin(difficulty, time) {\n    this.stats[difficulty].won++;\n    \n    // 최고 기록 갱신 확인 (custom 난이도 제외)\n    if (difficulty !== 'custom') {\n      if (!this.stats[difficulty].bestTime || time < this.stats[difficulty].bestTime) {\n        this.stats[difficulty].bestTime = time;\n      }\n    }\n    \n    this.saveStats();\n    return this.isNewBestTime(difficulty, time);\n  }\n  \n  // 최고 기록 확인\n  isNewBestTime(difficulty, time) {\n    if (difficulty === 'custom') return false;\n    return this.stats[difficulty].bestTime === time;\n  }\n  \n  // 승률 계산\n  getWinRate(difficulty) {\n    const { played, won } = this.stats[difficulty];\n    return played > 0 ? Math.round((won / played) * 100) : 0;\n  }\n  \n  // 통계 초기화\n  resetStats() {\n    this.stats = {\n      beginner: { played: 0, won: 0, bestTime: null },\n      intermediate: { played: 0, won: 0, bestTime: null },\n      expert: { played: 0, won: 0, bestTime: null },\n      custom: { played: 0, won: 0 }\n    };\n    this.saveStats();\n  }\n}\n\n// 게임 통계 인스턴스 생성\nconst gameStats = new GameStatistics();\n```\n\n2. 게임 시작 및 종료 시 통계 업데이트:\n```javascript\nclass MinesweeperGame {\n  // 기존 코드 유지...\n  \n  // revealCell 메서드 수정 - 첫 클릭 시 게임 시작 기록\n  revealCell(row, col) {\n    // 이미 게임이 끝났거나, 이미 열린 셀이거나, 깃발이 꽂힌 셀이면 무시\n    if (this.gameOver || this.board[row][col].isRevealed || this.board[row][col].isFlagged) {\n      return;\n    }\n    \n    // 첫 클릭인 경우 지뢰 배치 및 타이머 시작, 게임 시작 기록\n    if (this.firstClick) {\n      this.placeMines(row, col);\n      this.startTimer();\n      gameStats.recordGameStart(this.getDifficultyName());\n    }\n    \n    // 기존 코드 유지...\n  }\n  \n  // 현재 난이도 이름 반환\n  getDifficultyName() {\n    if (this.rows === DIFFICULTY.BEGINNER.rows && this.cols === DIFFICULTY.BEGINNER.cols && this.mineCount === DIFFICULTY.BEGINNER.mines) {\n      return 'beginner';\n    } else if (this.rows === DIFFICULTY.INTERMEDIATE.rows && this.cols === DIFFICULTY.INTERMEDIATE.cols && this.mineCount === DIFFICULTY.INTERMEDIATE.mines) {\n      return 'intermediate';\n    } else if (this.rows === DIFFICULTY.EXPERT.rows && this.cols === DIFFICULTY.EXPERT.cols && this.mineCount === DIFFICULTY.EXPERT.mines) {\n      return 'expert';\n    } else {\n      return 'custom';\n    }\n  }\n}\n```\n\n3. 게임 결과 화면에 통계 표시 추가:\n```javascript\nfunction showGameResult(isWin) {\n  const resultElement = document.createElement('div');\n  resultElement.className = 'game-result';\n  \n  const difficultyName = game.getDifficultyName();\n  const difficultyDisplayName = {\n    'beginner': '초급',\n    'intermediate': '중급',\n    'expert': '고급',\n    'custom': '사용자 정의'\n  }[difficultyName];\n  \n  if (isWin) {\n    // 승리 기록 및 최고 기록 확인\n    const isNewBest = gameStats.recordGameWin(difficultyName, game.timer);\n    \n    resultElement.innerHTML = `\n      <h2>축하합니다! 승리했습니다!</h2>\n      <div class=\"stats\">\n        <div>소요 시간: ${game.timer}초 ${isNewBest ? '(최고 기록!)' : ''}</div>\n        <div>난이도: ${difficultyDisplayName}</div>\n        <div>승률: ${gameStats.getWinRate(difficultyName)}%</div>\n      </div>\n      <button id=\"play-again\">다시 플레이</button>\n      <button id=\"show-stats\">통계 보기</button>\n    `;\n  } else {\n    resultElement.innerHTML = `\n      <h2>게임 오버!</h2>\n      <div class=\"stats\">\n        <div>소요 시간: ${game.timer}초</div>\n        <div>난이도: ${difficultyDisplayName}</div>\n        <div>승률: ${gameStats.getWinRate(difficultyName)}%</div>\n      </div>\n      <button id=\"try-again\">다시 시도</button>\n      <button id=\"show-stats\">통계 보기</button>\n    `;\n  }\n  \n  document.body.appendChild(resultElement);\n  \n  // 다시 플레이 버튼 이벤트 리스너\n  document.getElementById(isWin ? 'play-again' : 'try-again').addEventListener('click', () => {\n    document.body.removeChild(resultElement);\n    game.reset();\n    renderBoard();\n    document.getElementById('restart-btn').textContent = '😊';\n  });\n  \n  // 통계 보기 버튼 이벤트 리스너\n  document.getElementById('show-stats').addEventListener('click', () => {\n    document.body.removeChild(resultElement);\n    showStatistics();\n  });\n}\n\n// 통계 화면 표시\nfunction showStatistics() {\n  const statsElement = document.createElement('div');\n  statsElement.className = 'game-result';\n  \n  const stats = gameStats.stats;\n  \n  statsElement.innerHTML = `\n    <h2>게임 통계</h2>\n    <div class=\"stats-container\">\n      <table>\n        <tr>\n          <th>난이도</th>\n          <th>게임 수</th>\n          <th>승리</th>\n          <th>승률</th>\n          <th>최고 기록</th>\n        </tr>\n        <tr>\n          <td>초급</td>\n          <td>${stats.beginner.played}</td>\n          <td>${stats.beginner.won}</td>\n          <td>${gameStats.getWinRate('beginner')}%</td>\n          <td>${stats.beginner.bestTime ? stats.beginner.bestTime + '초' : '-'}</td>\n        </tr>\n        <tr>\n          <td>중급</td>\n          <td>${stats.intermediate.played}</td>\n          <td>${stats.intermediate.won}</td>\n          <td>${gameStats.getWinRate('intermediate')}%</td>\n          <td>${stats.intermediate.bestTime ? stats.intermediate.bestTime + '초' : '-'}</td>\n        </tr>\n        <tr>\n          <td>고급</td>\n          <td>${stats.expert.played}</td>\n          <td>${stats.expert.won}</td>\n          <td>${gameStats.getWinRate('expert')}%</td>\n          <td>${stats.expert.bestTime ? stats.expert.bestTime + '초' : '-'}</td>\n        </tr>\n        <tr>\n          <td>사용자 정의</td>\n          <td>${stats.custom.played}</td>\n          <td>${stats.custom.won}</td>\n          <td>${gameStats.getWinRate('custom')}%</td>\n          <td>-</td>\n        </tr>\n      </table>\n    </div>\n    <button id=\"close-stats\">닫기</button>\n    <button id=\"reset-stats\">통계 초기화</button>\n  `;\n  \n  document.body.appendChild(statsElement);\n  \n  // 닫기 버튼 이벤트 리스너\n  document.getElementById('close-stats').addEventListener('click', () => {\n    document.body.removeChild(statsElement);\n  });\n  \n  // 통계 초기화 버튼 이벤트 리스너\n  document.getElementById('reset-stats').addEventListener('click', () => {\n    if (confirm('정말 모든 통계를 초기화하시겠습니까?')) {\n      gameStats.resetStats();\n      document.body.removeChild(statsElement);\n      showStatistics(); // 초기화된 통계 다시 표시\n    }\n  });\n}\n\n// 메뉴에 통계 보기 버튼 추가\ndocument.addEventListener('DOMContentLoaded', () => {\n  // 기존 코드 유지...\n  \n  // 통계 버튼 추가\n  const difficultySelector = document.querySelector('.difficulty-selector');\n  const statsButton = document.createElement('button');\n  statsButton.id = 'stats-btn';\n  statsButton.textContent = '통계';\n  difficultySelector.appendChild(statsButton);\n  \n  statsButton.addEventListener('click', showStatistics);\n});\n```\n\n4. 통계 화면 스타일 추가 (styles.css):\n```css\n.stats-container {\n  margin: 15px 0;\n  max-height: 300px;\n  overflow-y: auto;\n}\n\n.stats-container table {\n  width: 100%;\n  border-collapse: collapse;\n  color: white;\n}\n\n.stats-container th, .stats-container td {\n  padding: 8px;\n  text-align: center;\n  border-bottom: 1px solid rgba(255, 255, 255, 0.3);\n}\n\n.stats-container th {\n  background-color: rgba(0, 0, 0, 0.5);\n}\n\n.stats-container tr:hover {\n  background-color: rgba(255, 255, 255, 0.1);\n}\n```",
+        "testStrategy": "1. 게임 승리 시 통계가 정상적으로 업데이트되는지 확인\n2. 최고 기록 갱신 시 '최고 기록!' 표시가 정상적으로 나타나는지 확인\n3. 통계 화면에 모든 난이도별 게임 수, 승리 수, 승률, 최고 기록이 정확히 표시되는지 확인\n4. 통계 초기화 기능이 정상적으로 작동하는지 확인\n5. 앱을 재시작해도 통계 데이터가 유지되는지 확인\n6. 다양한 난이도에서 게임을 진행한 후 통계가 정확히 반영되는지 확인",
+        "priority": "low",
+        "dependencies": [
+          7
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "GameStatistics 클래스 구현",
+            "description": "게임 통계를 관리하는 GameStatistics 클래스를 구현하여 로컬 스토리지에 게임 기록을 저장하고 불러오는 기능을 구현한다.",
+            "dependencies": [],
+            "details": "GameStatistics 클래스를 구현하여 다음 기능을 포함시킨다:\n- 생성자에서 로컬 스토리지에서 기존 통계 불러오기\n- loadStats() 메서드로 저장된 통계 불러오기\n- saveStats() 메서드로 통계 저장하기\n- recordGameStart() 메서드로 게임 시작 기록\n- recordGameWin() 메서드로 게임 승리 및 시간 기록\n- isNewBestTime() 메서드로 최고 기록 확인\n- getWinRate() 메서드로 승률 계산\n- resetStats() 메서드로 통계 초기화\n\n각 난이도별(초급, 중급, 고급, 사용자 정의)로 게임 수, 승리 수, 최고 기록을 저장한다.",
+            "status": "done",
+            "testStrategy": "로컬 스토리지 저장 및 불러오기 기능 테스트, 각 메서드의 정상 작동 확인"
+          },
+          {
+            "id": 2,
+            "title": "MinesweeperGame 클래스에 통계 연동 기능 추가",
+            "description": "기존 MinesweeperGame 클래스에 통계 기록 기능을 연동하여 게임 시작, 승리, 패배 시 통계를 업데이트하는 기능을 구현한다.",
+            "dependencies": [],
+            "details": "MinesweeperGame 클래스에 다음 기능을 추가한다:\n- getDifficultyName() 메서드로 현재 게임의 난이도 이름 반환\n- revealCell() 메서드 수정하여 첫 클릭 시 gameStats.recordGameStart() 호출\n- checkWin() 메서드 수정하여 승리 시 gameStats.recordGameWin() 호출\n- 게임 종료 처리 시 통계 업데이트 로직 추가\n\n난이도는 게임 보드 크기와 지뢰 수를 기준으로 'beginner', 'intermediate', 'expert', 'custom' 중 하나로 판별한다.",
+            "status": "done",
+            "testStrategy": "게임 시작, 승리, 패배 시 통계가 올바르게 업데이트되는지 확인"
+          },
+          {
+            "id": 3,
+            "title": "게임 결과 화면에 통계 표시 기능 구현",
+            "description": "게임 종료 후 결과 화면에 게임 통계(소요 시간, 난이도, 승률)를 표시하고 최고 기록 달성 시 특별 표시를 추가한다.",
+            "dependencies": [],
+            "details": "showGameResult() 함수를 구현하여 다음 기능을 포함시킨다:\n- 게임 승리/패배 여부에 따른 결과 화면 표시\n- 현재 게임의 소요 시간, 난이도, 승률 표시\n- 최고 기록 달성 시 특별 표시 추가\n- '다시 플레이' 및 '통계 보기' 버튼 추가\n- 버튼 클릭 이벤트 리스너 설정\n\n승리 시에는 gameStats.recordGameWin()을 호출하여 기록을 저장하고, 최고 기록 여부를 확인한다.",
+            "status": "done",
+            "testStrategy": "게임 승리/패배 시 결과 화면이 올바르게 표시되는지 확인, 최고 기록 표시 기능 테스트"
+          },
+          {
+            "id": 4,
+            "title": "통계 상세 화면 구현",
+            "description": "모든 난이도의 게임 통계를 표 형태로 보여주는 상세 통계 화면을 구현하고, 통계 초기화 기능을 추가한다.",
+            "dependencies": [],
+            "details": "showStatistics() 함수를 구현하여 다음 기능을 포함시킨다:\n- 모달 형태의 통계 화면 표시\n- 난이도별(초급, 중급, 고급, 사용자 정의) 게임 수, 승리 수, 승률, 최고 기록을 표 형태로 표시\n- '닫기' 및 '통계 초기화' 버튼 추가\n- 통계 초기화 시 확인 대화상자 표시 및 gameStats.resetStats() 호출\n- 초기화 후 갱신된 통계 다시 표시\n\n메인 메뉴에 '통계' 버튼을 추가하여 언제든지 통계 화면을 열 수 있도록 한다.",
+            "status": "done",
+            "testStrategy": "통계 화면 표시 및 초기화 기능 테스트, 모든 난이도의 통계가 올바르게 표시되는지 확인"
+          },
+          {
+            "id": 5,
+            "title": "통계 화면 스타일링 및 UI 개선",
+            "description": "통계 화면과 게임 결과 화면의 CSS 스타일을 추가하여 사용자 경험을 향상시킨다.",
+            "dependencies": [],
+            "details": "다음 UI 요소에 대한 CSS 스타일을 추가한다:\n- 통계 테이블 스타일링 (테두리, 색상, 간격 등)\n- 게임 결과 화면 스타일링 (배경, 텍스트 색상, 버튼 등)\n- 최고 기록 강조 표시 스타일\n- 통계 화면 모달 스타일 (배경 오버레이, 애니메이션 등)\n- 반응형 디자인으로 모바일 환경 지원\n\n.stats-container, .game-result 등의 클래스에 대한 CSS 규칙을 styles.css 파일에 추가한다.",
+            "status": "done",
+            "testStrategy": "다양한 화면 크기에서 UI 테스트, 모든 브라우저에서 일관된 표시 확인"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Electron 앱 패키징 및 배포 설정",
+        "description": "Electron 앱을 실행 파일로 패키징하고, 다양한 OS 환경에서 배포할 수 있도록 설정한다.",
+        "details": "1. 패키징 도구 설치:\n```bash\nnpm install --save-dev electron-builder\n```\n\n2. package.json 설정 추가:\n```json\n{\n  \"name\": \"minesweeper-electron\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Electron 기반 지뢰찾기 게임\",\n  \"main\": \"main.js\",\n  \"scripts\": {\n    \"start\": \"electron .\",\n    \"pack\": \"electron-builder --dir\",\n    \"dist\": \"electron-builder\",\n    \"dist:win\": \"electron-builder --win\",\n    \"dist:mac\": \"electron-builder --mac\",\n    \"dist:linux\": \"electron-builder --linux\"\n  },\n  \"build\": {\n    \"appId\": \"com.example.minesweeper\",\n    \"productName\": \"지뢰찾기\",\n    \"directories\": {\n      \"output\": \"dist\"\n    },\n    \"files\": [\n      \"**/*\",\n      \"!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}\",\n      \"!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}\",\n      \"!**/node_modules/*.d.ts\",\n      \"!**/node_modules/.bin\",\n      \"!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}\",\n      \"!.editorconfig\",\n      \"!**/._*\",\n      \"!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}\",\n      \"!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}\",\n      \"!**/{appveyor.yml,.travis.yml,circle.yml}\",\n      \"!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}\",\n      \"!**/dist/*\"\n    ],\n    \"win\": {\n      \"target\": [\"nsis\"],\n      \"icon\": \"assets/icon.ico\"\n    },\n    \"mac\": {\n      \"target\": [\"dmg\"],\n      \"icon\": \"assets/icon.icns\"\n    },\n    \"linux\": {\n      \"target\": [\"AppImage\", \"deb\"],\n      \"icon\": \"assets/icon.png\",\n      \"category\": \"Game\"\n    }\n  },\n  \"author\": \"\",\n  \"license\": \"MIT\",\n  \"devDependencies\": {\n    \"electron\": \"^22.0.0\",\n    \"electron-builder\": \"^23.6.0\"\n  }\n}\n```\n\n3. 앱 아이콘 생성 및 추가:\n   - assets 폴더에 icon.ico (Windows), icon.icns (macOS), icon.png (Linux) 파일 추가\n   - 아이콘 크기: 256x256 이상 권장\n\n4. 앱 메뉴 설정 (main.js에 추가):\n```javascript\nconst { app, BrowserWindow, Menu } = require('electron');\nconst path = require('path');\n\n// 기존 코드 유지...\n\n// 앱 메뉴 설정\nfunction createMenu() {\n  const template = [\n    {\n      label: '파일',\n      submenu: [\n        { label: '새 게임', click: () => mainWindow.webContents.send('new-game') },\n        { type: 'separator' },\n        { label: '종료', role: 'quit' }\n      ]\n    },\n    {\n      label: '난이도',\n      submenu: [\n        { label: '초급', click: () => mainWindow.webContents.send('change-difficulty', 'beginner') },\n        { label: '중급', click: () => mainWindow.webContents.send('change-difficulty', 'intermediate') },\n        { label: '고급', click: () => mainWindow.webContents.send('change-difficulty', 'expert') },\n        { label: '사용자 정의', click: () => mainWindow.webContents.send('change-difficulty', 'custom') }\n      ]\n    },\n    {\n      label: '통계',\n      click: () => mainWindow.webContents.send('show-statistics')\n    },\n    {\n      label: '도움말',\n      submenu: [\n        { label: '게임 방법', click: () => mainWindow.webContents.send('show-help') },\n        { type: 'separator' },\n        { label: '정보', click: () => mainWindow.webContents.send('show-about') }\n      ]\n    }\n  ];\n  \n  // 개발 모드에서만 개발자 도구 메뉴 추가\n  if (process.env.NODE_ENV === 'development') {\n    template.push({\n      label: '개발',\n      submenu: [\n        { role: 'reload' },\n        { role: 'forceReload' },\n        { role: 'toggleDevTools' }\n      ]\n    });\n  }\n  \n  const menu = Menu.buildFromTemplate(template);\n  Menu.setApplicationMenu(menu);\n}\n\nfunction createWindow() {\n  mainWindow = new BrowserWindow({\n    width: 400,\n    height: 500,\n    minWidth: 350,\n    minHeight: 450,\n    webPreferences: {\n      nodeIntegration: true,\n      contextIsolation: false\n    },\n    icon: path.join(__dirname, 'assets/icon.png')\n  });\n\n  mainWindow.loadFile('src/index.html');\n  createMenu();\n}\n```\n\n5. 렌더러 프로세스에서 IPC 이벤트 처리 (game.js에 추가):\n```javascript\nconst { ipcRenderer } = require('electron');\n\n// IPC 이벤트 리스너 등록\nipcRenderer.on('new-game', () => {\n  game.reset();\n  renderBoard();\n  document.getElementById('restart-btn').textContent = '😊';\n});\n\nipcRenderer.on('change-difficulty', (event, difficulty) => {\n  switch (difficulty) {\n    case 'beginner':\n      changeDifficulty(DIFFICULTY.BEGINNER.rows, DIFFICULTY.BEGINNER.cols, DIFFICULTY.BEGINNER.mines);\n      break;\n    case 'intermediate':\n      changeDifficulty(DIFFICULTY.INTERMEDIATE.rows, DIFFICULTY.INTERMEDIATE.cols, DIFFICULTY.INTERMEDIATE.mines);\n      break;\n    case 'expert':\n      changeDifficulty(DIFFICULTY.EXPERT.rows, DIFFICULTY.EXPERT.cols, DIFFICULTY.EXPERT.mines);\n      break;\n    case 'custom':\n      showCustomDialog();\n      break;\n  }\n});\n\nipcRenderer.on('show-statistics', () => {\n  showStatistics();\n});\n\nipcRenderer.on('show-help', () => {\n  showHelp();\n});\n\nipcRenderer.on('show-about', () => {\n  showAbout();\n});\n\n// 도움말 표시 함수\nfunction showHelp() {\n  const helpElement = document.createElement('div');\n  helpElement.className = 'game-result';\n  helpElement.innerHTML = `\n    <h2>게임 방법</h2>\n    <div class=\"help-content\">\n      <p><strong>목표:</strong> 지뢰를 피해 모든 안전한 칸을 열어야 합니다.</p>\n      <p><strong>조작:</strong></p>\n      <ul>\n        <li>좌클릭: 칸 열기</li>\n        <li>우클릭: 깃발 표시/제거</li>\n      </ul>\n      <p><strong>숫자:</strong> 주변 8칸에 있는 지뢰의 개수를 나타냅니다.</p>\n      <p><strong>깃발:</strong> 지뢰가 있다고 생각되는 위치에 표시합니다.</p>\n    </div>\n    <button id=\"close-help\">닫기</button>\n  `;\n  \n  document.body.appendChild(helpElement);\n  \n  document.getElementById('close-help').addEventListener('click', () => {\n    document.body.removeChild(helpElement);\n  });\n}\n\n// 정보 표시 함수\nfunction showAbout() {\n  const aboutElement = document.createElement('div');\n  aboutElement.className = 'game-result';\n  aboutElement.innerHTML = `\n    <h2>지뢰찾기</h2>\n    <div class=\"about-content\">\n      <p>버전: 1.0.0</p>\n      <p>Electron 기반 지뢰찾기 게임</p>\n      <p>© 2023 Minesweeper</p>\n    </div>\n    <button id=\"close-about\">닫기</button>\n  `;\n  \n  document.body.appendChild(aboutElement);\n  \n  document.getElementById('close-about').addEventListener('click', () => {\n    document.body.removeChild(aboutElement);\n  });\n}\n```\n\n6. 빌드 및 배포 명령어 실행:\n```bash\n# 개발 모드 실행\nnpm start\n\n# Windows 용 빌드\nnpm run dist:win\n\n# macOS 용 빌드\nnpm run dist:mac\n\n# Linux 용 빌드\nnpm run dist:linux\n\n# 모든 플랫폼 빌드\nnpm run dist\n```",
+        "testStrategy": "1. 각 OS 환경(Windows, macOS, Linux)에서 빌드된 실행 파일이 정상적으로 실행되는지 확인\n2. 앱 아이콘이 정상적으로 표시되는지 확인\n3. 메뉴가 정상적으로 작동하는지 확인\n4. 설치 프로그램이 정상적으로 생성되고 설치되는지 확인\n5. 앱 실행 시 오류가 없는지 확인\n6. 앱 종료 및 재시작 시 상태가 정상적으로 저장/복원되는지 확인\n7. 다양한 화면 크기에서 UI가 정상적으로 표시되는지 확인",
+        "priority": "high",
+        "dependencies": [
+          8,
+          9
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "아이콘 파일 생성 및 assets 폴더 구성",
+            "description": "애플리케이션에 필요한 아이콘 파일을 생성하고 assets 폴더에 추가합니다. 각 OS별로 필요한 아이콘 형식을 준비합니다.",
+            "dependencies": [],
+            "details": "1. assets 폴더를 프로젝트 루트에 생성합니다.\n2. 다음 아이콘 파일을 준비합니다:\n   - Windows용: icon.ico (256x256 이상)\n   - macOS용: icon.icns (1024x1024 권장)\n   - Linux용: icon.png (512x512 권장)\n3. 아이콘 생성 도구를 사용하여 필요한 형식으로 변환합니다:\n   - 원본 이미지는 PNG 형식으로 준비\n   - Windows: png-to-ico 변환기 사용\n   - macOS: iconutil 또는 온라인 변환기 사용\n   - Linux: 고해상도 PNG 파일 사용\n4. 생성된 아이콘 파일을 assets 폴더에 배치합니다.",
+            "status": "done",
+            "testStrategy": "각 OS 환경에서 아이콘이 올바르게 표시되는지 확인합니다. 특히 macOS에서는 아이콘 해상도가 충분한지 확인하세요."
+          },
+          {
+            "id": 2,
+            "title": "electron-builder 설정 및 package.json 구성",
+            "description": "electron-builder를 설치하고 package.json 파일에 빌드 설정을 추가합니다.",
+            "dependencies": [],
+            "details": "1. electron-builder 패키지 설치:\n```bash\nnpm install --save-dev electron-builder\n```\n\n2. package.json 파일에 빌드 스크립트 추가:\n```json\n\"scripts\": {\n  \"start\": \"electron .\",\n  \"pack\": \"electron-builder --dir\",\n  \"dist\": \"electron-builder\",\n  \"dist:win\": \"electron-builder --win\",\n  \"dist:mac\": \"electron-builder --mac\",\n  \"dist:linux\": \"electron-builder --linux\"\n}\n```\n\n3. package.json에 build 설정 추가:\n```json\n\"build\": {\n  \"appId\": \"com.example.minesweeper\",\n  \"productName\": \"지뢰찾기\",\n  \"directories\": {\n    \"output\": \"dist\"\n  },\n  \"files\": [\n    \"**/*\",\n    \"!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}\",\n    \"!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}\",\n    \"!**/node_modules/*.d.ts\",\n    \"!**/node_modules/.bin\",\n    \"!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}\",\n    \"!.editorconfig\",\n    \"!**/._*\",\n    \"!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}\",\n    \"!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}\",\n    \"!**/{appveyor.yml,.travis.yml,circle.yml}\",\n    \"!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}\",\n    \"!**/dist/*\"\n  ],\n  \"win\": {\n    \"target\": [\"nsis\"],\n    \"icon\": \"assets/icon.ico\"\n  },\n  \"mac\": {\n    \"target\": [\"dmg\"],\n    \"icon\": \"assets/icon.icns\"\n  },\n  \"linux\": {\n    \"target\": [\"AppImage\", \"deb\"],\n    \"icon\": \"assets/icon.png\",\n    \"category\": \"Game\"\n  }\n}\n```\n\n4. 필요한 메타데이터(name, version, description, author, license) 확인 및 업데이트",
+            "status": "done",
+            "testStrategy": "package.json 파일의 구문 오류를 확인하고, npm run pack 명령어로 기본 패키징이 정상 작동하는지 테스트합니다."
+          },
+          {
+            "id": 3,
+            "title": "앱 메뉴 구현 및 main.js 업데이트",
+            "description": "Electron 애플리케이션의 메뉴를 구현하고 main.js 파일을 업데이트합니다.",
+            "dependencies": [
+              1
+            ],
+            "details": "1. main.js 파일에 Menu 모듈 추가:\n```javascript\nconst { app, BrowserWindow, Menu } = require('electron');\nconst path = require('path');\n```\n\n2. 메뉴 생성 함수 구현:\n```javascript\nfunction createMenu() {\n  const template = [\n    {\n      label: '파일',\n      submenu: [\n        { label: '새 게임', click: () => mainWindow.webContents.send('new-game') },\n        { type: 'separator' },\n        { label: '종료', role: 'quit' }\n      ]\n    },\n    {\n      label: '난이도',\n      submenu: [\n        { label: '초급', click: () => mainWindow.webContents.send('change-difficulty', 'beginner') },\n        { label: '중급', click: () => mainWindow.webContents.send('change-difficulty', 'intermediate') },\n        { label: '고급', click: () => mainWindow.webContents.send('change-difficulty', 'expert') },\n        { label: '사용자 정의', click: () => mainWindow.webContents.send('change-difficulty', 'custom') }\n      ]\n    },\n    {\n      label: '통계',\n      click: () => mainWindow.webContents.send('show-statistics')\n    },\n    {\n      label: '도움말',\n      submenu: [\n        { label: '게임 방법', click: () => mainWindow.webContents.send('show-help') },\n        { type: 'separator' },\n        { label: '정보', click: () => mainWindow.webContents.send('show-about') }\n      ]\n    }\n  ];\n  \n  // 개발 모드에서만 개발자 도구 메뉴 추가\n  if (process.env.NODE_ENV === 'development') {\n    template.push({\n      label: '개발',\n      submenu: [\n        { role: 'reload' },\n        { role: 'forceReload' },\n        { role: 'toggleDevTools' }\n      ]\n    });\n  }\n  \n  const menu = Menu.buildFromTemplate(template);\n  Menu.setApplicationMenu(menu);\n}\n```\n\n3. createWindow 함수 업데이트:\n```javascript\nfunction createWindow() {\n  mainWindow = new BrowserWindow({\n    width: 400,\n    height: 500,\n    minWidth: 350,\n    minHeight: 450,\n    webPreferences: {\n      nodeIntegration: true,\n      contextIsolation: false\n    },\n    icon: path.join(__dirname, 'assets/icon.png')\n  });\n\n  mainWindow.loadFile('src/index.html');\n  createMenu();\n}\n```\n\n4. 기존 main.js 코드와 통합하여 앱 시작 시 메뉴가 생성되도록 설정",
+            "status": "done",
+            "testStrategy": "npm start로 애플리케이션을 실행하여 메뉴가 올바르게 표시되는지 확인합니다. 각 메뉴 항목을 클릭하여 이벤트가 제대로 발생하는지 테스트합니다."
+          },
+          {
+            "id": 4,
+            "title": "렌더러 프로세스에서 IPC 이벤트 처리 구현",
+            "description": "메인 프로세스에서 보내는 IPC 이벤트를 렌더러 프로세스(game.js)에서 처리하는 코드를 구현합니다.",
+            "dependencies": [
+              3
+            ],
+            "details": "1. game.js 파일에 electron의 ipcRenderer 모듈 추가:\n```javascript\nconst { ipcRenderer } = require('electron');\n```\n\n2. 메뉴 이벤트 리스너 등록:\n```javascript\n// IPC 이벤트 리스너 등록\nipcRenderer.on('new-game', () => {\n  game.reset();\n  renderBoard();\n  document.getElementById('restart-btn').textContent = '😊';\n});\n\nipcRenderer.on('change-difficulty', (event, difficulty) => {\n  switch (difficulty) {\n    case 'beginner':\n      changeDifficulty(DIFFICULTY.BEGINNER.rows, DIFFICULTY.BEGINNER.cols, DIFFICULTY.BEGINNER.mines);\n      break;\n    case 'intermediate':\n      changeDifficulty(DIFFICULTY.INTERMEDIATE.rows, DIFFICULTY.INTERMEDIATE.cols, DIFFICULTY.INTERMEDIATE.mines);\n      break;\n    case 'expert':\n      changeDifficulty(DIFFICULTY.EXPERT.rows, DIFFICULTY.EXPERT.cols, DIFFICULTY.EXPERT.mines);\n      break;\n    case 'custom':\n      showCustomDialog();\n      break;\n  }\n});\n\nipcRenderer.on('show-statistics', () => {\n  showStatistics();\n});\n\nipcRenderer.on('show-help', () => {\n  showHelp();\n});\n\nipcRenderer.on('show-about', () => {\n  showAbout();\n});\n```\n\n3. 도움말 및 정보 표시 함수 구현:\n```javascript\n// 도움말 표시 함수\nfunction showHelp() {\n  const helpElement = document.createElement('div');\n  helpElement.className = 'game-result';\n  helpElement.innerHTML = `\n    <h2>게임 방법</h2>\n    <div class=\"help-content\">\n      <p><strong>목표:</strong> 지뢰를 피해 모든 안전한 칸을 열어야 합니다.</p>\n      <p><strong>조작:</strong></p>\n      <ul>\n        <li>좌클릭: 칸 열기</li>\n        <li>우클릭: 깃발 표시/제거</li>\n      </ul>\n      <p><strong>숫자:</strong> 주변 8칸에 있는 지뢰의 개수를 나타냅니다.</p>\n      <p><strong>깃발:</strong> 지뢰가 있다고 생각되는 위치에 표시합니다.</p>\n    </div>\n    <button id=\"close-help\">닫기</button>\n  `;\n  \n  document.body.appendChild(helpElement);\n  \n  document.getElementById('close-help').addEventListener('click', () => {\n    document.body.removeChild(helpElement);\n  });\n}\n\n// 정보 표시 함수\nfunction showAbout() {\n  const aboutElement = document.createElement('div');\n  aboutElement.className = 'game-result';\n  aboutElement.innerHTML = `\n    <h2>지뢰찾기</h2>\n    <div class=\"about-content\">\n      <p>버전: 1.0.0</p>\n      <p>Electron 기반 지뢰찾기 게임</p>\n      <p>© 2023 Minesweeper</p>\n    </div>\n    <button id=\"close-about\">닫기</button>\n  `;\n  \n  document.body.appendChild(aboutElement);\n  \n  document.getElementById('close-about').addEventListener('click', () => {\n    document.body.removeChild(aboutElement);\n  });\n}\n```\n\n4. 필요한 CSS 스타일 추가 (game.css 파일에):\n```css\n.game-result {\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background-color: #f0f0f0;\n  border: 2px solid #999;\n  padding: 20px;\n  z-index: 100;\n  box-shadow: 0 0 10px rgba(0,0,0,0.3);\n  max-width: 80%;\n  text-align: center;\n}\n\n.help-content, .about-content {\n  text-align: left;\n  margin: 15px 0;\n}\n\n.help-content ul {\n  padding-left: 20px;\n}\n```",
+            "status": "done",
+            "testStrategy": "각 메뉴 항목을 클릭하여 해당 이벤트가 렌더러 프로세스에서 올바르게 처리되는지 확인합니다. 특히 난이도 변경, 도움말, 정보 표시 기능이 제대로 작동하는지 테스트합니다."
+          },
+          {
+            "id": 5,
+            "title": "애플리케이션 빌드 및 배포 테스트",
+            "description": "구성된 설정을 바탕으로 각 OS 플랫폼별로 애플리케이션을 빌드하고 배포 파일을 생성합니다.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "1. 빌드 전 최종 확인:\n   - 모든 필요한 파일이 존재하는지 확인 (assets 폴더의 아이콘 등)\n   - package.json의 name, version, description 등 메타데이터 확인\n   - main.js와 game.js의 코드가 올바르게 구현되었는지 확인\n\n2. 개발 모드에서 테스트:\n```bash\nnpm start\n```\n\n3. 각 OS별 빌드 실행:\n```bash\n# Windows 용 빌드\nnpm run dist:win\n\n# macOS 용 빌드 (macOS 환경에서만 가능)\nnpm run dist:mac\n\n# Linux 용 빌드\nnpm run dist:linux\n```\n\n4. 빌드 결과물 확인:\n   - dist 폴더에 생성된 설치 파일 확인\n   - Windows: .exe 파일 (NSIS 인스톨러)\n   - macOS: .dmg 파일\n   - Linux: .AppImage 및 .deb 파일\n\n5. 배포 파일 테스트:\n   - 각 OS 환경에서 생성된 설치 파일로 애플리케이션 설치 테스트\n   - 설치된 애플리케이션 실행 및 기능 테스트\n   - 아이콘, 메뉴, 게임 기능이 모두 정상 작동하는지 확인",
+            "status": "done",
+            "testStrategy": "각 OS 환경에서 빌드된 설치 파일을 실행하여 설치 과정이 정상적으로 진행되는지 확인합니다. 설치 후 애플리케이션을 실행하여 모든 기능이 정상 작동하는지 테스트합니다. 특히 아이콘 표시, 메뉴 작동, 게임 플레이가 문제없이 되는지 확인합니다."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-09T09:56:24.969Z",
+      "updated": "2025-07-09T22:52:07.586Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

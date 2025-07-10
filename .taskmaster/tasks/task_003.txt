@@ -1,0 +1,550 @@
+# Task ID: 3
+# Title: 게임 보드 생성 및 지뢰 배치 로직 구현
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: NxN 크기의 게임 보드를 생성하고 지뢰를 무작위로 배치하는 핵심 로직을 구현한다.
+# Details:
+1. 게임 상태 관리를 위한 기본 구조 작성 (game.js):
+```javascript
+class MinesweeperGame {
+  constructor(rows = 9, cols = 9, mineCount = 10) {
+    this.rows = rows;
+    this.cols = cols;
+    this.mineCount = mineCount;
+    this.board = [];
+    this.revealed = 0;
+    this.gameOver = false;
+    this.flagCount = 0;
+    this.firstClick = true;
+    
+    this.initializeBoard();
+  }
+  
+  initializeBoard() {
+    // 빈 보드 생성
+    this.board = Array(this.rows).fill().map(() => 
+      Array(this.cols).fill().map(() => ({
+        isMine: false,
+        isRevealed: false,
+        isFlagged: false,
+        neighborMines: 0
+      }))
+    );
+  }
+  
+  placeMines(firstClickRow, firstClickCol) {
+    let minesPlaced = 0;
+    
+    while (minesPlaced < this.mineCount) {
+      const row = Math.floor(Math.random() * this.rows);
+      const col = Math.floor(Math.random() * this.cols);
+      
+      // 첫 클릭 위치와 주변 8칸에는 지뢰를 배치하지 않음
+      const isFirstClickArea = Math.abs(row - firstClickRow) <= 1 && 
+                              Math.abs(col - firstClickCol) <= 1;
+                              
+      if (!this.board[row][col].isMine && !isFirstClickArea) {
+        this.board[row][col].isMine = true;
+        minesPlaced++;
+        
+        // 주변 8칸의 neighborMines 값 증가
+        this.incrementNeighborMines(row, col);
+      }
+    }
+    
+    this.firstClick = false;
+  }
+  
+  incrementNeighborMines(row, col) {
+    for (let r = Math.max(0, row - 1); r <= Math.min(this.rows - 1, row + 1); r++) {
+      for (let c = Math.max(0, col - 1); c <= Math.min(this.cols - 1, col + 1); c++) {
+        if (r !== row || c !== col) {
+          this.board[r][c].neighborMines++;
+        }
+      }
+    }
+  }
+  
+  // 게임 보드 크기 변경 메서드
+  resizeBoard(rows, cols, mineCount) {
+    this.rows = rows;
+    this.cols = cols;
+    this.mineCount = mineCount;
+    this.reset();
+  }
+  
+  // 게임 리셋
+  reset() {
+    this.board = [];
+    this.revealed = 0;
+    this.gameOver = false;
+    this.flagCount = 0;
+    this.firstClick = true;
+    
+    this.initializeBoard();
+  }
+}
+
+// 게임 인스턴스 생성
+const game = new MinesweeperGame();
+```
+
+2. 게임 보드 렌더링 함수 추가:
+```javascript
+function renderBoard() {
+  const boardElement = document.getElementById('game-board');
+  boardElement.innerHTML = '';
+  boardElement.style.gridTemplateColumns = `repeat(${game.cols}, 30px)`;
+  boardElement.style.gridTemplateRows = `repeat(${game.rows}, 30px)`;
+  
+  for (let row = 0; row < game.rows; row++) {
+    for (let col = 0; col < game.cols; col++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.row = row;
+      cell.dataset.col = col;
+      
+      // 셀 클릭 이벤트 추가는 다음 태스크에서 구현
+      
+      boardElement.appendChild(cell);
+    }
+  }
+}
+
+// 초기 보드 렌더링
+document.addEventListener('DOMContentLoaded', () => {
+  renderBoard();
+});
+```
+
+# Test Strategy:
+1. 다양한 크기(9x9, 16x16 등)의 게임 보드가 정상적으로 생성되는지 확인
+2. 지뢰가 지정된 개수만큼 정확히 배치되는지 확인
+3. 첫 클릭 위치와 그 주변에는 지뢰가 배치되지 않는지 확인
+4. 각 셀의 neighborMines 값이 주변 지뢰 수에 맞게 정확히 계산되는지 확인
+5. 콘솔에 board 배열을 출력하여 데이터 구조가 올바른지 검증
+
+# Subtasks:
+## 1. 구현 및 테스트 placeMines 메서드 [pending]
+### Dependencies: None
+### Description: 첫 번째 클릭 위치를 기반으로 지뢰를 무작위로 배치하는 placeMines 메서드를 완성하고 테스트한다.
+### Details:
+placeMines 메서드는 이미 기본 구조가 작성되어 있으므로, 다음 사항을 확인하고 보완한다:
+1. 첫 클릭 위치와 그 주변 8칸에 지뢰가 배치되지 않도록 하는 로직 검증
+2. 무작위 지뢰 배치 알고리즘의 효율성 검토 (무한 루프 방지)
+3. 지뢰 수가 보드 크기보다 클 경우의 예외 처리 추가
+4. 콘솔에 지뢰 위치를 출력하는 디버깅 코드 추가 (개발 중에만 사용)
+
+```javascript
+placeMines(firstClickRow, firstClickCol) {
+  // 지뢰 수가 배치 가능한 셀 수보다 많은 경우 예외 처리
+  const safeArea = 9; // 첫 클릭 위치와 주변 8칸
+  const totalCells = this.rows * this.cols;
+  const maxMines = totalCells - safeArea;
+  
+  if (this.mineCount > maxMines) {
+    this.mineCount = maxMines;
+    console.warn(`지뢰 수가 너무 많아 ${maxMines}개로 조정되었습니다.`);
+  }
+  
+  let minesPlaced = 0;
+  
+  while (minesPlaced < this.mineCount) {
+    const row = Math.floor(Math.random() * this.rows);
+    const col = Math.floor(Math.random() * this.cols);
+    
+    // 첫 클릭 위치와 주변 8칸에는 지뢰를 배치하지 않음
+    const isFirstClickArea = Math.abs(row - firstClickRow) <= 1 && 
+                           Math.abs(col - firstClickCol) <= 1;
+                           
+    if (!this.board[row][col].isMine && !isFirstClickArea) {
+      this.board[row][col].isMine = true;
+      minesPlaced++;
+      
+      // 주변 8칸의 neighborMines 값 증가
+      this.incrementNeighborMines(row, col);
+    }
+  }
+  
+  this.firstClick = false;
+  
+  // 디버깅용 - 개발 중에만 사용
+  this.printMineLocations();
+}
+
+// 디버깅용 - 지뢰 위치 출력
+printMineLocations() {
+  console.log('지뢰 위치:');
+  for (let row = 0; row < this.rows; row++) {
+    for (let col = 0; col < this.cols; col++) {
+      if (this.board[row][col].isMine) {
+        console.log(`[${row}, ${col}]`);
+      }
+    }
+  }
+}
+```
+
+## 2. incrementNeighborMines 메서드 최적화 및 테스트 [pending]
+### Dependencies: None
+### Description: 지뢰 주변 8칸의 neighborMines 값을 증가시키는 incrementNeighborMines 메서드를 최적화하고 테스트한다.
+### Details:
+incrementNeighborMines 메서드는 이미 기본 구조가 작성되어 있으나, 다음과 같이 최적화하고 테스트한다:
+
+```javascript
+incrementNeighborMines(row, col) {
+  // 주변 8방향에 대한 상대 좌표 배열
+  const directions = [
+    [-1, -1], [-1, 0], [-1, 1],
+    [0, -1],           [0, 1],
+    [1, -1],  [1, 0],  [1, 1]
+  ];
+  
+  for (const [dr, dc] of directions) {
+    const newRow = row + dr;
+    const newCol = col + dc;
+    
+    // 보드 범위 내에 있는지 확인
+    if (newRow >= 0 && newRow < this.rows && newCol >= 0 && newCol < this.cols) {
+      this.board[newRow][newCol].neighborMines++;
+    }
+  }
+}
+
+// 특정 셀의 주변 지뢰 수를 계산하는 유틸리티 메서드 추가
+calculateNeighborMines(row, col) {
+  let count = 0;
+  const directions = [
+    [-1, -1], [-1, 0], [-1, 1],
+    [0, -1],           [0, 1],
+    [1, -1],  [1, 0],  [1, 1]
+  ];
+  
+  for (const [dr, dc] of directions) {
+    const newRow = row + dr;
+    const newCol = col + dc;
+    
+    if (newRow >= 0 && newRow < this.rows && 
+        newCol >= 0 && newCol < this.cols && 
+        this.board[newRow][newCol].isMine) {
+      count++;
+    }
+  }
+  
+  return count;
+}
+
+// 전체 보드의 neighborMines 값을 재계산하는 메서드 추가
+recalculateAllNeighborMines() {
+  // 모든 셀의 neighborMines 값을 0으로 초기화
+  for (let row = 0; row < this.rows; row++) {
+    for (let col = 0; col < this.cols; col++) {
+      this.board[row][col].neighborMines = 0;
+    }
+  }
+  
+  // 지뢰가 있는 셀 주변의 neighborMines 값 증가
+  for (let row = 0; row < this.rows; row++) {
+    for (let col = 0; col < this.cols; col++) {
+      if (this.board[row][col].isMine) {
+        this.incrementNeighborMines(row, col);
+      }
+    }
+  }
+}
+```
+
+## 3. 게임 난이도 설정 기능 구현 [pending]
+### Dependencies: None
+### Description: 초급, 중급, 고급 등 다양한 난이도 설정을 위한 기능을 구현한다.
+### Details:
+게임 난이도에 따라 보드 크기와 지뢰 수를 조정하는 기능을 구현한다:
+
+```javascript
+// MinesweeperGame 클래스에 난이도 설정 메서드 추가
+setDifficulty(level) {
+  switch(level) {
+    case 'beginner':
+      this.resizeBoard(9, 9, 10);
+      break;
+    case 'intermediate':
+      this.resizeBoard(16, 16, 40);
+      break;
+    case 'expert':
+      this.resizeBoard(16, 30, 99);
+      break;
+    case 'custom':
+      // 커스텀 설정은 별도 UI를 통해 처리
+      break;
+    default:
+      this.resizeBoard(9, 9, 10); // 기본값은 초급
+  }
+  
+  return {
+    rows: this.rows,
+    cols: this.cols,
+    mines: this.mineCount
+  };
+}
+
+// 난이도 설정 UI 연결 함수
+function setupDifficultyControls() {
+  const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+  
+  difficultyButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const level = button.dataset.level;
+      const settings = game.setDifficulty(level);
+      
+      // UI 업데이트
+      updateGameInfo(settings);
+      renderBoard();
+      
+      // 활성 버튼 스타일 변경
+      difficultyButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+    });
+  });
+  
+  // 커스텀 난이도 설정 처리
+  const customForm = document.getElementById('custom-form');
+  if (customForm) {
+    customForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const rows = parseInt(document.getElementById('custom-rows').value);
+      const cols = parseInt(document.getElementById('custom-cols').value);
+      const mines = parseInt(document.getElementById('custom-mines').value);
+      
+      // 입력값 검증
+      const maxRows = 30, maxCols = 30;
+      const validRows = Math.min(Math.max(rows, 5), maxRows);
+      const validCols = Math.min(Math.max(cols, 5), maxCols);
+      const maxMines = Math.floor((validRows * validCols) * 0.85); // 최대 85%까지 지뢰 허용
+      const validMines = Math.min(Math.max(mines, 1), maxMines);
+      
+      game.resizeBoard(validRows, validCols, validMines);
+      
+      // UI 업데이트
+      updateGameInfo({
+        rows: validRows,
+        cols: validCols,
+        mines: validMines
+      });
+      renderBoard();
+      
+      // 커스텀 버튼 활성화
+      difficultyButtons.forEach(btn => btn.classList.remove('active'));
+      document.querySelector('[data-level="custom"]').classList.add('active');
+    });
+  }
+}
+
+// 게임 정보 UI 업데이트
+function updateGameInfo(settings) {
+  const infoElement = document.getElementById('game-info');
+  if (infoElement) {
+    infoElement.textContent = `보드: ${settings.rows}×${settings.cols}, 지뢰: ${settings.mines}`;
+  }
+}
+```
+
+## 4. 게임 보드 UI 렌더링 개선 [pending]
+### Dependencies: None
+### Description: 게임 보드의 UI 렌더링을 개선하여 지뢰 수, 플래그 수 등의 정보를 표시하고 셀의 상태에 따라 다른 스타일을 적용한다.
+### Details:
+게임 보드 렌더링 함수를 개선하여 셀의 상태에 따라 다른 스타일을 적용하고, 게임 정보를 표시한다:
+
+```javascript
+function renderBoard() {
+  const boardElement = document.getElementById('game-board');
+  boardElement.innerHTML = '';
+  boardElement.style.gridTemplateColumns = `repeat(${game.cols}, 30px)`;
+  boardElement.style.gridTemplateRows = `repeat(${game.rows}, 30px)`;
+  
+  for (let row = 0; row < game.rows; row++) {
+    for (let col = 0; col < game.cols; col++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.row = row;
+      cell.dataset.col = col;
+      
+      const cellData = game.board[row][col];
+      
+      // 셀 상태에 따른 클래스 추가
+      if (cellData.isRevealed) {
+        cell.classList.add('revealed');
+        
+        if (cellData.isMine) {
+          cell.classList.add('mine');
+          cell.textContent = '💣';
+        } else if (cellData.neighborMines > 0) {
+          cell.classList.add(`neighbors-${cellData.neighborMines}`);
+          cell.textContent = cellData.neighborMines;
+        }
+      } else if (cellData.isFlagged) {
+        cell.classList.add('flagged');
+        cell.textContent = '🚩';
+      }
+      
+      boardElement.appendChild(cell);
+    }
+  }
+  
+  // 게임 상태 정보 업데이트
+  updateGameStatus();
+}
+
+function updateGameStatus() {
+  // 남은 지뢰 수 표시 (지뢰 수 - 플래그 수)
+  const minesLeftElement = document.getElementById('mines-left');
+  if (minesLeftElement) {
+    minesLeftElement.textContent = `남은 지뢰: ${game.mineCount - game.flagCount}`;
+  }
+  
+  // 게임 상태 표시
+  const gameStatusElement = document.getElementById('game-status');
+  if (gameStatusElement) {
+    if (game.gameOver) {
+      const isWin = game.revealed === (game.rows * game.cols - game.mineCount);
+      gameStatusElement.textContent = isWin ? '게임 승리! 🎉' : '게임 오버! 💥';
+      gameStatusElement.className = isWin ? 'status-win' : 'status-lose';
+    } else {
+      gameStatusElement.textContent = '게임 진행 중';
+      gameStatusElement.className = '';
+    }
+  }
+}
+
+// 게임 보드 크기에 따라 컨테이너 크기 조정
+function adjustBoardContainer() {
+  const container = document.getElementById('game-container');
+  if (container) {
+    const cellSize = 30; // px
+    const borderWidth = 1; // px
+    const width = game.cols * (cellSize + 2 * borderWidth);
+    const height = game.rows * (cellSize + 2 * borderWidth);
+    
+    container.style.width = `${width}px`;
+    container.style.minHeight = `${height + 100}px`; // 추가 UI 공간 확보
+  }
+}
+
+// 초기 보드 렌더링 및 이벤트 설정
+document.addEventListener('DOMContentLoaded', () => {
+  renderBoard();
+  adjustBoardContainer();
+  setupDifficultyControls();
+});
+```
+
+## 5. 게임 초기화 및 첫 클릭 처리 구현 [pending]
+### Dependencies: None
+### Description: 게임 초기화 및 첫 번째 클릭 시 지뢰 배치 로직을 구현한다.
+### Details:
+게임 초기화 및 첫 번째 클릭 시 지뢰 배치 로직을 구현한다:
+
+```javascript
+// MinesweeperGame 클래스에 메서드 추가
+
+// 첫 번째 클릭 처리 메서드
+handleFirstClick(row, col) {
+  if (this.firstClick) {
+    this.placeMines(row, col);
+    return true;
+  }
+  return false;
+}
+
+// 게임 초기화 메서드 개선
+reset() {
+  this.board = [];
+  this.revealed = 0;
+  this.gameOver = false;
+  this.flagCount = 0;
+  this.firstClick = true;
+  
+  this.initializeBoard();
+  
+  // UI 업데이트
+  if (typeof renderBoard === 'function') {
+    renderBoard();
+  }
+}
+
+// 게임 시작 타이머 관련 메서드
+startTimer() {
+  this.startTime = Date.now();
+  this.timerInterval = setInterval(() => {
+    const elapsedSeconds = Math.floor((Date.now() - this.startTime) / 1000);
+    this.updateTimerDisplay(elapsedSeconds);
+  }, 1000);
+}
+
+stopTimer() {
+  if (this.timerInterval) {
+    clearInterval(this.timerInterval);
+    this.timerInterval = null;
+  }
+}
+
+updateTimerDisplay(seconds) {
+  const timerElement = document.getElementById('timer');
+  if (timerElement) {
+    timerElement.textContent = `시간: ${seconds}초`;
+  }
+}
+
+// UI 이벤트 핸들러 설정
+function setupBoardEvents() {
+  const boardElement = document.getElementById('game-board');
+  
+  boardElement.addEventListener('click', (e) => {
+    if (!e.target.classList.contains('cell') || game.gameOver) return;
+    
+    const row = parseInt(e.target.dataset.row);
+    const col = parseInt(e.target.dataset.col);
+    const cell = game.board[row][col];
+    
+    // 이미 공개되었거나 플래그가 있는 셀은 무시
+    if (cell.isRevealed || cell.isFlagged) return;
+    
+    // 첫 번째 클릭 처리
+    if (game.firstClick) {
+      game.handleFirstClick(row, col);
+      game.startTimer();
+    }
+    
+    // 셀 공개 로직은 다음 태스크에서 구현
+    
+    renderBoard();
+  });
+  
+  // 우클릭으로 플래그 설정 (다음 태스크에서 구현)
+  boardElement.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    // 플래그 설정 로직은 다음 태스크에서 구현
+  });
+}
+
+// 리셋 버튼 이벤트 설정
+function setupResetButton() {
+  const resetButton = document.getElementById('reset-button');
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
+      game.stopTimer();
+      game.reset();
+    });
+  }
+}
+
+// 초기화 및 이벤트 설정
+document.addEventListener('DOMContentLoaded', () => {
+  renderBoard();
+  adjustBoardContainer();
+  setupDifficultyControls();
+  setupBoardEvents();
+  setupResetButton();
+});
+```
+

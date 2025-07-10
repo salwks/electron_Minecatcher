@@ -1,0 +1,589 @@
+# Task ID: 10
+# Title: Electron 앱 패키징 및 배포 설정
+# Status: pending
+# Dependencies: 8, 9
+# Priority: high
+# Description: Electron 앱을 실행 파일로 패키징하고, 다양한 OS 환경에서 배포할 수 있도록 설정한다.
+# Details:
+1. 패키징 도구 설치:
+```bash
+npm install --save-dev electron-builder
+```
+
+2. package.json 설정 추가:
+```json
+{
+  "name": "minesweeper-electron",
+  "version": "1.0.0",
+  "description": "Electron 기반 지뢰찾기 게임",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.example.minesweeper",
+    "productName": "지뢰찾기",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
+      "!**/dist/*"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "assets/icon.png",
+      "category": "Game"
+    }
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0"
+  }
+}
+```
+
+3. 앱 아이콘 생성 및 추가:
+   - assets 폴더에 icon.ico (Windows), icon.icns (macOS), icon.png (Linux) 파일 추가
+   - 아이콘 크기: 256x256 이상 권장
+
+4. 앱 메뉴 설정 (main.js에 추가):
+```javascript
+const { app, BrowserWindow, Menu } = require('electron');
+const path = require('path');
+
+// 기존 코드 유지...
+
+// 앱 메뉴 설정
+function createMenu() {
+  const template = [
+    {
+      label: '파일',
+      submenu: [
+        { label: '새 게임', click: () => mainWindow.webContents.send('new-game') },
+        { type: 'separator' },
+        { label: '종료', role: 'quit' }
+      ]
+    },
+    {
+      label: '난이도',
+      submenu: [
+        { label: '초급', click: () => mainWindow.webContents.send('change-difficulty', 'beginner') },
+        { label: '중급', click: () => mainWindow.webContents.send('change-difficulty', 'intermediate') },
+        { label: '고급', click: () => mainWindow.webContents.send('change-difficulty', 'expert') },
+        { label: '사용자 정의', click: () => mainWindow.webContents.send('change-difficulty', 'custom') }
+      ]
+    },
+    {
+      label: '통계',
+      click: () => mainWindow.webContents.send('show-statistics')
+    },
+    {
+      label: '도움말',
+      submenu: [
+        { label: '게임 방법', click: () => mainWindow.webContents.send('show-help') },
+        { type: 'separator' },
+        { label: '정보', click: () => mainWindow.webContents.send('show-about') }
+      ]
+    }
+  ];
+  
+  // 개발 모드에서만 개발자 도구 메뉴 추가
+  if (process.env.NODE_ENV === 'development') {
+    template.push({
+      label: '개발',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' }
+      ]
+    });
+  }
+  
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 400,
+    height: 500,
+    minWidth: 350,
+    minHeight: 450,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    },
+    icon: path.join(__dirname, 'assets/icon.png')
+  });
+
+  mainWindow.loadFile('src/index.html');
+  createMenu();
+}
+```
+
+5. 렌더러 프로세스에서 IPC 이벤트 처리 (game.js에 추가):
+```javascript
+const { ipcRenderer } = require('electron');
+
+// IPC 이벤트 리스너 등록
+ipcRenderer.on('new-game', () => {
+  game.reset();
+  renderBoard();
+  document.getElementById('restart-btn').textContent = '😊';
+});
+
+ipcRenderer.on('change-difficulty', (event, difficulty) => {
+  switch (difficulty) {
+    case 'beginner':
+      changeDifficulty(DIFFICULTY.BEGINNER.rows, DIFFICULTY.BEGINNER.cols, DIFFICULTY.BEGINNER.mines);
+      break;
+    case 'intermediate':
+      changeDifficulty(DIFFICULTY.INTERMEDIATE.rows, DIFFICULTY.INTERMEDIATE.cols, DIFFICULTY.INTERMEDIATE.mines);
+      break;
+    case 'expert':
+      changeDifficulty(DIFFICULTY.EXPERT.rows, DIFFICULTY.EXPERT.cols, DIFFICULTY.EXPERT.mines);
+      break;
+    case 'custom':
+      showCustomDialog();
+      break;
+  }
+});
+
+ipcRenderer.on('show-statistics', () => {
+  showStatistics();
+});
+
+ipcRenderer.on('show-help', () => {
+  showHelp();
+});
+
+ipcRenderer.on('show-about', () => {
+  showAbout();
+});
+
+// 도움말 표시 함수
+function showHelp() {
+  const helpElement = document.createElement('div');
+  helpElement.className = 'game-result';
+  helpElement.innerHTML = `
+    <h2>게임 방법</h2>
+    <div class="help-content">
+      <p><strong>목표:</strong> 지뢰를 피해 모든 안전한 칸을 열어야 합니다.</p>
+      <p><strong>조작:</strong></p>
+      <ul>
+        <li>좌클릭: 칸 열기</li>
+        <li>우클릭: 깃발 표시/제거</li>
+      </ul>
+      <p><strong>숫자:</strong> 주변 8칸에 있는 지뢰의 개수를 나타냅니다.</p>
+      <p><strong>깃발:</strong> 지뢰가 있다고 생각되는 위치에 표시합니다.</p>
+    </div>
+    <button id="close-help">닫기</button>
+  `;
+  
+  document.body.appendChild(helpElement);
+  
+  document.getElementById('close-help').addEventListener('click', () => {
+    document.body.removeChild(helpElement);
+  });
+}
+
+// 정보 표시 함수
+function showAbout() {
+  const aboutElement = document.createElement('div');
+  aboutElement.className = 'game-result';
+  aboutElement.innerHTML = `
+    <h2>지뢰찾기</h2>
+    <div class="about-content">
+      <p>버전: 1.0.0</p>
+      <p>Electron 기반 지뢰찾기 게임</p>
+      <p>© 2023 Minesweeper</p>
+    </div>
+    <button id="close-about">닫기</button>
+  `;
+  
+  document.body.appendChild(aboutElement);
+  
+  document.getElementById('close-about').addEventListener('click', () => {
+    document.body.removeChild(aboutElement);
+  });
+}
+```
+
+6. 빌드 및 배포 명령어 실행:
+```bash
+# 개발 모드 실행
+npm start
+
+# Windows 용 빌드
+npm run dist:win
+
+# macOS 용 빌드
+npm run dist:mac
+
+# Linux 용 빌드
+npm run dist:linux
+
+# 모든 플랫폼 빌드
+npm run dist
+```
+
+# Test Strategy:
+1. 각 OS 환경(Windows, macOS, Linux)에서 빌드된 실행 파일이 정상적으로 실행되는지 확인
+2. 앱 아이콘이 정상적으로 표시되는지 확인
+3. 메뉴가 정상적으로 작동하는지 확인
+4. 설치 프로그램이 정상적으로 생성되고 설치되는지 확인
+5. 앱 실행 시 오류가 없는지 확인
+6. 앱 종료 및 재시작 시 상태가 정상적으로 저장/복원되는지 확인
+7. 다양한 화면 크기에서 UI가 정상적으로 표시되는지 확인
+
+# Subtasks:
+## 1. 아이콘 파일 생성 및 assets 폴더 구성 [pending]
+### Dependencies: None
+### Description: 애플리케이션에 필요한 아이콘 파일을 생성하고 assets 폴더에 추가합니다. 각 OS별로 필요한 아이콘 형식을 준비합니다.
+### Details:
+1. assets 폴더를 프로젝트 루트에 생성합니다.
+2. 다음 아이콘 파일을 준비합니다:
+   - Windows용: icon.ico (256x256 이상)
+   - macOS용: icon.icns (1024x1024 권장)
+   - Linux용: icon.png (512x512 권장)
+3. 아이콘 생성 도구를 사용하여 필요한 형식으로 변환합니다:
+   - 원본 이미지는 PNG 형식으로 준비
+   - Windows: png-to-ico 변환기 사용
+   - macOS: iconutil 또는 온라인 변환기 사용
+   - Linux: 고해상도 PNG 파일 사용
+4. 생성된 아이콘 파일을 assets 폴더에 배치합니다.
+
+## 2. electron-builder 설정 및 package.json 구성 [pending]
+### Dependencies: None
+### Description: electron-builder를 설치하고 package.json 파일에 빌드 설정을 추가합니다.
+### Details:
+1. electron-builder 패키지 설치:
+```bash
+npm install --save-dev electron-builder
+```
+
+2. package.json 파일에 빌드 스크립트 추가:
+```json
+"scripts": {
+  "start": "electron .",
+  "pack": "electron-builder --dir",
+  "dist": "electron-builder",
+  "dist:win": "electron-builder --win",
+  "dist:mac": "electron-builder --mac",
+  "dist:linux": "electron-builder --linux"
+}
+```
+
+3. package.json에 build 설정 추가:
+```json
+"build": {
+  "appId": "com.example.minesweeper",
+  "productName": "지뢰찾기",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "**/*",
+    "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+    "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+    "!**/node_modules/*.d.ts",
+    "!**/node_modules/.bin",
+    "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+    "!.editorconfig",
+    "!**/._*",
+    "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+    "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+    "!**/{appveyor.yml,.travis.yml,circle.yml}",
+    "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
+    "!**/dist/*"
+  ],
+  "win": {
+    "target": ["nsis"],
+    "icon": "assets/icon.ico"
+  },
+  "mac": {
+    "target": ["dmg"],
+    "icon": "assets/icon.icns"
+  },
+  "linux": {
+    "target": ["AppImage", "deb"],
+    "icon": "assets/icon.png",
+    "category": "Game"
+  }
+}
+```
+
+4. 필요한 메타데이터(name, version, description, author, license) 확인 및 업데이트
+
+## 3. 앱 메뉴 구현 및 main.js 업데이트 [pending]
+### Dependencies: 10.1
+### Description: Electron 애플리케이션의 메뉴를 구현하고 main.js 파일을 업데이트합니다.
+### Details:
+1. main.js 파일에 Menu 모듈 추가:
+```javascript
+const { app, BrowserWindow, Menu } = require('electron');
+const path = require('path');
+```
+
+2. 메뉴 생성 함수 구현:
+```javascript
+function createMenu() {
+  const template = [
+    {
+      label: '파일',
+      submenu: [
+        { label: '새 게임', click: () => mainWindow.webContents.send('new-game') },
+        { type: 'separator' },
+        { label: '종료', role: 'quit' }
+      ]
+    },
+    {
+      label: '난이도',
+      submenu: [
+        { label: '초급', click: () => mainWindow.webContents.send('change-difficulty', 'beginner') },
+        { label: '중급', click: () => mainWindow.webContents.send('change-difficulty', 'intermediate') },
+        { label: '고급', click: () => mainWindow.webContents.send('change-difficulty', 'expert') },
+        { label: '사용자 정의', click: () => mainWindow.webContents.send('change-difficulty', 'custom') }
+      ]
+    },
+    {
+      label: '통계',
+      click: () => mainWindow.webContents.send('show-statistics')
+    },
+    {
+      label: '도움말',
+      submenu: [
+        { label: '게임 방법', click: () => mainWindow.webContents.send('show-help') },
+        { type: 'separator' },
+        { label: '정보', click: () => mainWindow.webContents.send('show-about') }
+      ]
+    }
+  ];
+  
+  // 개발 모드에서만 개발자 도구 메뉴 추가
+  if (process.env.NODE_ENV === 'development') {
+    template.push({
+      label: '개발',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' }
+      ]
+    });
+  }
+  
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+```
+
+3. createWindow 함수 업데이트:
+```javascript
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 400,
+    height: 500,
+    minWidth: 350,
+    minHeight: 450,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    },
+    icon: path.join(__dirname, 'assets/icon.png')
+  });
+
+  mainWindow.loadFile('src/index.html');
+  createMenu();
+}
+```
+
+4. 기존 main.js 코드와 통합하여 앱 시작 시 메뉴가 생성되도록 설정
+
+## 4. 렌더러 프로세스에서 IPC 이벤트 처리 구현 [pending]
+### Dependencies: 10.3
+### Description: 메인 프로세스에서 보내는 IPC 이벤트를 렌더러 프로세스(game.js)에서 처리하는 코드를 구현합니다.
+### Details:
+1. game.js 파일에 electron의 ipcRenderer 모듈 추가:
+```javascript
+const { ipcRenderer } = require('electron');
+```
+
+2. 메뉴 이벤트 리스너 등록:
+```javascript
+// IPC 이벤트 리스너 등록
+ipcRenderer.on('new-game', () => {
+  game.reset();
+  renderBoard();
+  document.getElementById('restart-btn').textContent = '😊';
+});
+
+ipcRenderer.on('change-difficulty', (event, difficulty) => {
+  switch (difficulty) {
+    case 'beginner':
+      changeDifficulty(DIFFICULTY.BEGINNER.rows, DIFFICULTY.BEGINNER.cols, DIFFICULTY.BEGINNER.mines);
+      break;
+    case 'intermediate':
+      changeDifficulty(DIFFICULTY.INTERMEDIATE.rows, DIFFICULTY.INTERMEDIATE.cols, DIFFICULTY.INTERMEDIATE.mines);
+      break;
+    case 'expert':
+      changeDifficulty(DIFFICULTY.EXPERT.rows, DIFFICULTY.EXPERT.cols, DIFFICULTY.EXPERT.mines);
+      break;
+    case 'custom':
+      showCustomDialog();
+      break;
+  }
+});
+
+ipcRenderer.on('show-statistics', () => {
+  showStatistics();
+});
+
+ipcRenderer.on('show-help', () => {
+  showHelp();
+});
+
+ipcRenderer.on('show-about', () => {
+  showAbout();
+});
+```
+
+3. 도움말 및 정보 표시 함수 구현:
+```javascript
+// 도움말 표시 함수
+function showHelp() {
+  const helpElement = document.createElement('div');
+  helpElement.className = 'game-result';
+  helpElement.innerHTML = `
+    <h2>게임 방법</h2>
+    <div class="help-content">
+      <p><strong>목표:</strong> 지뢰를 피해 모든 안전한 칸을 열어야 합니다.</p>
+      <p><strong>조작:</strong></p>
+      <ul>
+        <li>좌클릭: 칸 열기</li>
+        <li>우클릭: 깃발 표시/제거</li>
+      </ul>
+      <p><strong>숫자:</strong> 주변 8칸에 있는 지뢰의 개수를 나타냅니다.</p>
+      <p><strong>깃발:</strong> 지뢰가 있다고 생각되는 위치에 표시합니다.</p>
+    </div>
+    <button id="close-help">닫기</button>
+  `;
+  
+  document.body.appendChild(helpElement);
+  
+  document.getElementById('close-help').addEventListener('click', () => {
+    document.body.removeChild(helpElement);
+  });
+}
+
+// 정보 표시 함수
+function showAbout() {
+  const aboutElement = document.createElement('div');
+  aboutElement.className = 'game-result';
+  aboutElement.innerHTML = `
+    <h2>지뢰찾기</h2>
+    <div class="about-content">
+      <p>버전: 1.0.0</p>
+      <p>Electron 기반 지뢰찾기 게임</p>
+      <p>© 2023 Minesweeper</p>
+    </div>
+    <button id="close-about">닫기</button>
+  `;
+  
+  document.body.appendChild(aboutElement);
+  
+  document.getElementById('close-about').addEventListener('click', () => {
+    document.body.removeChild(aboutElement);
+  });
+}
+```
+
+4. 필요한 CSS 스타일 추가 (game.css 파일에):
+```css
+.game-result {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f0f0f0;
+  border: 2px solid #999;
+  padding: 20px;
+  z-index: 100;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  max-width: 80%;
+  text-align: center;
+}
+
+.help-content, .about-content {
+  text-align: left;
+  margin: 15px 0;
+}
+
+.help-content ul {
+  padding-left: 20px;
+}
+```
+
+## 5. 애플리케이션 빌드 및 배포 테스트 [pending]
+### Dependencies: 10.1, 10.2, 10.3, 10.4
+### Description: 구성된 설정을 바탕으로 각 OS 플랫폼별로 애플리케이션을 빌드하고 배포 파일을 생성합니다.
+### Details:
+1. 빌드 전 최종 확인:
+   - 모든 필요한 파일이 존재하는지 확인 (assets 폴더의 아이콘 등)
+   - package.json의 name, version, description 등 메타데이터 확인
+   - main.js와 game.js의 코드가 올바르게 구현되었는지 확인
+
+2. 개발 모드에서 테스트:
+```bash
+npm start
+```
+
+3. 각 OS별 빌드 실행:
+```bash
+# Windows 용 빌드
+npm run dist:win
+
+# macOS 용 빌드 (macOS 환경에서만 가능)
+npm run dist:mac
+
+# Linux 용 빌드
+npm run dist:linux
+```
+
+4. 빌드 결과물 확인:
+   - dist 폴더에 생성된 설치 파일 확인
+   - Windows: .exe 파일 (NSIS 인스톨러)
+   - macOS: .dmg 파일
+   - Linux: .AppImage 및 .deb 파일
+
+5. 배포 파일 테스트:
+   - 각 OS 환경에서 생성된 설치 파일로 애플리케이션 설치 테스트
+   - 설치된 애플리케이션 실행 및 기능 테스트
+   - 아이콘, 메뉴, 게임 기능이 모두 정상 작동하는지 확인
+

@@ -1,0 +1,479 @@
+# Task ID: 2
+# Title: 게임 보드 UI 구현
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: 지뢰찾기 게임의 기본 UI 레이아웃과 게임 보드를 HTML/CSS로 구현한다.
+# Details:
+1. 기본 HTML 구조 작성:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>지뢰찾기</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-header">
+      <div class="mine-counter">0</div>
+      <button id="restart-btn">😊</button>
+      <div class="timer">0</div>
+    </div>
+    <div id="game-board"></div>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>
+```
+
+2. CSS 스타일 작성 (styles.css):
+```css
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
+.game-container {
+  border: 3px solid #808080;
+  border-radius: 5px;
+  background-color: #c0c0c0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #c0c0c0;
+  border-bottom: 3px solid #808080;
+}
+
+.mine-counter, .timer {
+  background-color: #000;
+  color: #f00;
+  font-family: 'Digital', monospace;
+  padding: 5px 10px;
+  border: 2px inset #808080;
+}
+
+#restart-btn {
+  font-size: 24px;
+  background-color: #c0c0c0;
+  border: 2px outset #fff;
+  cursor: pointer;
+}
+
+#game-board {
+  display: grid;
+  grid-template-columns: repeat(9, 30px);
+  grid-template-rows: repeat(9, 30px);
+  gap: 1px;
+  padding: 10px;
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  background-color: #c0c0c0;
+  border: 2px outset #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cell.revealed {
+  border: 1px solid #808080;
+  background-color: #d3d3d3;
+}
+
+.cell.flagged {
+  background-color: #c0c0c0;
+}
+```
+
+# Test Strategy:
+1. 브라우저에서 UI가 정상적으로 렌더링되는지 확인
+2. 다양한 화면 크기에서 레이아웃이 깨지지 않는지 확인
+3. 게임 보드 그리드가 9x9로 정확하게 표시되는지 확인
+4. 헤더의 타이머, 재시작 버튼, 지뢰 카운터가 올바르게 배치되었는지 확인
+
+# Subtasks:
+## 1. 게임 보드 동적 생성 함수 구현 [pending]
+### Dependencies: None
+### Description: JavaScript를 사용하여 게임 보드의 셀을 동적으로 생성하는 함수를 구현합니다. 난이도에 따라 다른 크기의 보드를 생성할 수 있도록 합니다.
+### Details:
+game.js 파일에 createGameBoard 함수를 구현합니다. 이 함수는 rows, columns, mineCount 매개변수를 받아 게임 보드를 생성합니다. 기본값으로 초급 난이도(9x9, 10개 지뢰)를 설정합니다. DOM 조작을 통해 #game-board 요소 안에 cell 클래스를 가진 div 요소들을 생성하고, 각 셀에 row와 column 데이터 속성을 추가합니다. CSS Grid 속성을 동적으로 설정하여 보드 크기를 조정합니다.
+
+## 2. 셀 상태 및 스타일 관리 구현 [pending]
+### Dependencies: None
+### Description: 게임 보드의 각 셀에 대한 상태(숨김, 공개, 깃발 표시)를 관리하고 해당 상태에 따른 스타일을 적용하는 기능을 구현합니다.
+### Details:
+셀의 상태를 관리하는 함수들을 구현합니다. revealCell 함수는 셀을 공개 상태로 변경하고 'revealed' 클래스를 추가합니다. toggleFlag 함수는 셀에 깃발 표시를 토글하고 'flagged' 클래스를 추가/제거합니다. 숫자가 표시된 셀에 대해 1~8까지의 숫자에 따라 다른 색상을 적용하는 getNumberColor 함수를 구현합니다. CSS에 각 숫자별 색상 스타일을 추가합니다.
+
+## 3. 게임 헤더 UI 기능 구현 [pending]
+### Dependencies: None
+### Description: 게임 헤더의 타이머, 지뢰 카운터, 재시작 버튼의 기능을 구현합니다.
+### Details:
+타이머 기능을 구현합니다. 게임 시작 시 타이머가 1초마다 증가하도록 setInterval을 사용합니다. 지뢰 카운터는 남은 지뢰 수(전체 지뢰 수 - 깃발 수)를 표시합니다. 재시작 버튼 클릭 시 게임을 초기화하는 기능을 구현합니다. 게임 상태에 따라 재시작 버튼의 이모지를 변경합니다(게임 중: 😊, 승리: 😎, 패배: 😵).
+
+## 4. 반응형 디자인 및 UI 개선 [pending]
+### Dependencies: 2.3
+### Description: 다양한 화면 크기에서 게임 보드가 적절하게 표시되도록 반응형 디자인을 적용하고 UI를 개선합니다.
+### Details:
+미디어 쿼리를 사용하여 다양한 화면 크기에 대응하는 스타일을 추가합니다. 모바일 화면에서는 셀 크기를 줄이고 터치 조작에 최적화합니다. 게임 컨테이너에 최대 너비를 설정하고 화면 크기에 따라 자동으로 조정되도록 합니다. 호버 효과와 클릭 애니메이션을 추가하여 사용자 경험을 향상시킵니다. 폰트와 색상 대비를 개선하여 가독성을 높입니다.
+
+## 5. 난이도 선택 UI 구현 [pending]
+### Dependencies: 2.3
+### Description: 사용자가 게임 난이도(초급, 중급, 고급)를 선택할 수 있는 UI를 구현합니다.
+### Details:
+게임 컨테이너 위에 난이도 선택 버튼 그룹을 추가합니다. 초급(9x9, 10개 지뢰), 중급(16x16, 40개 지뢰), 고급(30x16, 99개 지뢰) 옵션을 제공합니다. 난이도 변경 시 게임 보드를 재생성하고 게임을 초기화하는 기능을 구현합니다. 현재 선택된 난이도 버튼을 시각적으로 강조하는 스타일을 적용합니다. 로컬 스토리지를 사용하여 사용자가 선택한 마지막 난이도를 저장하고 페이지 로드 시 복원합니다.
+
+## 6. 게임 보드 셀 생성 함수 구현 [pending]
+### Dependencies: None
+### Description: JavaScript를 사용하여 게임 보드의 셀을 동적으로 생성하는 함수를 구현합니다.
+### Details:
+game.js 파일에 다음 코드를 작성합니다:
+
+const boardSize = 9;
+const totalMines = 10;
+let gameBoard = [];
+
+function createBoard() {
+  const board = document.getElementById('game-board');
+  board.innerHTML = '';
+  
+  // 게임 보드 배열 초기화
+  gameBoard = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
+  
+  // 셀 생성
+  for (let row = 0; row < boardSize; row++) {
+    for (let col = 0; col < boardSize; col++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.dataset.row = row;
+      cell.dataset.col = col;
+      
+      // 클릭 이벤트 리스너 추가 (나중에 구현)
+      cell.addEventListener('click', handleCellClick);
+      cell.addEventListener('contextmenu', handleRightClick);
+      
+      board.appendChild(cell);
+    }
+  }
+}
+
+// 임시 함수 (나중에 구현)
+function handleCellClick() {}
+function handleRightClick(e) {
+  e.preventDefault();
+}
+
+## 7. 지뢰 배치 및 숫자 계산 구현 [pending]
+### Dependencies: 2.6
+### Description: 게임 보드에 무작위로 지뢰를 배치하고, 각 셀 주변의 지뢰 수를 계산하는 함수를 구현합니다.
+### Details:
+game.js 파일에 다음 함수들을 추가합니다:
+
+function placeMines() {
+  let minesPlaced = 0;
+  
+  while (minesPlaced < totalMines) {
+    const row = Math.floor(Math.random() * boardSize);
+    const col = Math.floor(Math.random() * boardSize);
+    
+    // 이미 지뢰가 있는 위치가 아니라면 지뢰 배치
+    if (gameBoard[row][col] !== -1) {
+      gameBoard[row][col] = -1; // -1은 지뢰를 의미
+      minesPlaced++;
+    }
+  }
+}
+
+function calculateNumbers() {
+  for (let row = 0; row < boardSize; row++) {
+    for (let col = 0; col < boardSize; col++) {
+      // 지뢰가 있는 셀은 건너뜀
+      if (gameBoard[row][col] === -1) continue;
+      
+      // 주변 8개 셀 확인
+      let count = 0;
+      for (let r = Math.max(0, row-1); r <= Math.min(boardSize-1, row+1); r++) {
+        for (let c = Math.max(0, col-1); c <= Math.min(boardSize-1, col+1); c++) {
+          if (gameBoard[r][c] === -1) count++;
+        }
+      }
+      
+      gameBoard[row][col] = count;
+    }
+  }
+}
+
+function initGame() {
+  createBoard();
+  placeMines();
+  calculateNumbers();
+}
+
+// 페이지 로드 시 게임 초기화
+window.addEventListener('load', initGame);
+
+## 8. 셀 클릭 이벤트 처리 구현 [pending]
+### Dependencies: 2.7
+### Description: 사용자가 셀을 클릭했을 때 셀을 열거나 게임 오버를 처리하는 기능을 구현합니다.
+### Details:
+game.js 파일에 다음 코드를 추가합니다:
+
+let gameOver = false;
+
+function handleCellClick(e) {
+  if (gameOver) return;
+  
+  const row = parseInt(e.target.dataset.row);
+  const col = parseInt(e.target.dataset.col);
+  
+  // 이미 열린 셀이거나 깃발이 꽂힌 셀은 무시
+  if (e.target.classList.contains('revealed') || e.target.classList.contains('flagged')) {
+    return;
+  }
+  
+  // 지뢰를 클릭한 경우
+  if (gameBoard[row][col] === -1) {
+    revealMines();
+    e.target.style.backgroundColor = 'red';
+    document.getElementById('restart-btn').textContent = '😵';
+    gameOver = true;
+    return;
+  }
+  
+  // 빈 셀(0)을 클릭한 경우 주변 셀도 함께 열기
+  if (gameBoard[row][col] === 0) {
+    revealEmptyCells(row, col);
+  } else {
+    // 숫자 셀인 경우 해당 셀만 열기
+    revealCell(row, col);
+  }
+  
+  // 승리 조건 확인
+  checkWin();
+}
+
+function revealCell(row, col) {
+  const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+  if (cell.classList.contains('revealed') || cell.classList.contains('flagged')) {
+    return;
+  }
+  
+  cell.classList.add('revealed');
+  
+  // 숫자 표시 (0은 표시하지 않음)
+  if (gameBoard[row][col] > 0) {
+    cell.textContent = gameBoard[row][col];
+    
+    // 숫자에 따라 색상 지정
+    const colors = ['', 'blue', 'green', 'red', 'darkblue', 'darkred', 'teal', 'black', 'gray'];
+    cell.style.color = colors[gameBoard[row][col]];
+  }
+}
+
+function revealEmptyCells(row, col) {
+  // 범위를 벗어나거나 이미 열린 셀이면 무시
+  if (row < 0 || row >= boardSize || col < 0 || col >= boardSize) {
+    return;
+  }
+  
+  const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+  if (cell.classList.contains('revealed') || cell.classList.contains('flagged')) {
+    return;
+  }
+  
+  // 현재 셀 열기
+  revealCell(row, col);
+  
+  // 빈 셀(0)인 경우에만 주변 셀 재귀적으로 열기
+  if (gameBoard[row][col] === 0) {
+    for (let r = Math.max(0, row-1); r <= Math.min(boardSize-1, row+1); r++) {
+      for (let c = Math.max(0, col-1); c <= Math.min(boardSize-1, col+1); c++) {
+        if (r !== row || c !== col) {
+          revealEmptyCells(r, c);
+        }
+      }
+    }
+  }
+}
+
+function revealMines() {
+  for (let row = 0; row < boardSize; row++) {
+    for (let col = 0; col < boardSize; col++) {
+      if (gameBoard[row][col] === -1) {
+        const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        cell.classList.add('revealed');
+        cell.textContent = '💣';
+      }
+    }
+  }
+}
+
+## 9. 우클릭 깃발 기능 구현 [pending]
+### Dependencies: 2.8
+### Description: 사용자가 셀을 우클릭하면 깃발을 설치하거나 제거하는 기능과 지뢰 카운터를 구현합니다.
+### Details:
+game.js 파일에 다음 코드를 추가합니다:
+
+let flagsPlaced = 0;
+
+function handleRightClick(e) {
+  e.preventDefault(); // 기본 컨텍스트 메뉴 방지
+  if (gameOver) return;
+  
+  const cell = e.target;
+  
+  // 이미 열린 셀은 깃발을 꽂을 수 없음
+  if (cell.classList.contains('revealed')) {
+    return;
+  }
+  
+  // 깃발 토글
+  if (cell.classList.contains('flagged')) {
+    cell.classList.remove('flagged');
+    cell.textContent = '';
+    flagsPlaced--;
+  } else {
+    cell.classList.add('flagged');
+    cell.textContent = '🚩';
+    flagsPlaced++;
+  }
+  
+  // 지뢰 카운터 업데이트
+  updateMineCounter();
+}
+
+function updateMineCounter() {
+  const counter = document.querySelector('.mine-counter');
+  counter.textContent = totalMines - flagsPlaced;
+}
+
+// 초기 지뢰 카운터 설정
+function initMineCounter() {
+  const counter = document.querySelector('.mine-counter');
+  counter.textContent = totalMines;
+  flagsPlaced = 0;
+}
+
+// initGame 함수 업데이트
+function initGame() {
+  createBoard();
+  placeMines();
+  calculateNumbers();
+  initMineCounter();
+  gameOver = false;
+  document.getElementById('restart-btn').textContent = '😊';
+}
+
+## 10. 게임 승리 조건 및 재시작 기능 구현 [pending]
+### Dependencies: 2.9
+### Description: 게임 승리 조건을 확인하고, 재시작 버튼 기능을 구현합니다. 또한 타이머 기능을 추가합니다.
+### Details:
+game.js 파일에 다음 코드를 추가합니다:
+
+let timer;
+let seconds = 0;
+
+function checkWin() {
+  // 모든 비지뢰 셀이 열렸는지 확인
+  const totalCells = boardSize * boardSize;
+  const revealedCells = document.querySelectorAll('.cell.revealed').length;
+  
+  if (revealedCells === totalCells - totalMines) {
+    gameOver = true;
+    document.getElementById('restart-btn').textContent = '😎';
+    clearInterval(timer);
+    
+    // 모든 지뢰에 깃발 표시
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        if (gameBoard[row][col] === -1) {
+          const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+          if (!cell.classList.contains('flagged')) {
+            cell.classList.add('flagged');
+            cell.textContent = '🚩';
+          }
+        }
+      }
+    }
+    
+    // 지뢰 카운터를 0으로 설정
+    document.querySelector('.mine-counter').textContent = '0';
+  }
+}
+
+function startTimer() {
+  seconds = 0;
+  document.querySelector('.timer').textContent = seconds;
+  
+  clearInterval(timer);
+  timer = setInterval(() => {
+    seconds++;
+    document.querySelector('.timer').textContent = seconds;
+    
+    // 999초 제한 (3자리 숫자)
+    if (seconds >= 999) {
+      clearInterval(timer);
+    }
+  }, 1000);
+}
+
+function setupRestartButton() {
+  const restartBtn = document.getElementById('restart-btn');
+  restartBtn.addEventListener('click', () => {
+    clearInterval(timer);
+    initGame();
+    startTimer();
+  });
+}
+
+// 첫 번째 클릭에서만 타이머 시작
+function handleFirstClick() {
+  const cells = document.querySelectorAll('.cell');
+  let firstClickDone = false;
+  
+  cells.forEach(cell => {
+    const originalClickHandler = cell.onclick;
+    
+    cell.onclick = (e) => {
+      if (!firstClickDone) {
+        firstClickDone = true;
+        startTimer();
+      }
+      
+      // 원래 클릭 핸들러 호출
+      handleCellClick(e);
+    };
+  });
+}
+
+// 초기화 함수 업데이트
+function initGame() {
+  createBoard();
+  placeMines();
+  calculateNumbers();
+  initMineCounter();
+  gameOver = false;
+  document.getElementById('restart-btn').textContent = '😊';
+  handleFirstClick();
+}
+
+// 페이지 로드 시 실행
+window.addEventListener('load', () => {
+  initGame();
+  setupRestartButton();
+});
+
