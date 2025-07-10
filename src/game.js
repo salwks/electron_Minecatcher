@@ -1,4 +1,3 @@
-alert("game.js loaded!");
 class MinesweeperGame {
   constructor(rows = 9, cols = 9, mineCount = 10) {
     this.rows = rows;
@@ -63,19 +62,6 @@ class MinesweeperGame {
     }
 
     this.firstClick = false;
-
-    // 디버깅용 - 개발 중에만 사용
-    try {
-      if (
-        typeof process !== "undefined" &&
-        process.env &&
-        process.env.NODE_ENV === "development"
-      ) {
-        this.printMineLocations();
-      }
-    } catch (e) {
-      // 아무것도 안 함
-    }
   }
 
   incrementNeighborMines(row, col) {
@@ -444,7 +430,6 @@ class MinesweeperGame {
 
     try {
       localStorage.setItem("minesweeper_game", JSON.stringify(gameState));
-      console.log("게임 상태 저장 완료");
     } catch (error) {
       console.error("게임 상태 저장 실패:", error);
     }
@@ -474,7 +459,6 @@ class MinesweeperGame {
         this.startTimer();
       }
 
-      console.log("게임 상태 불러오기 완료");
       return true;
     } catch (error) {
       console.error("게임 상태 불러오기 실패:", error);
@@ -485,7 +469,6 @@ class MinesweeperGame {
   // 저장된 게임 삭제
   clearSavedGame() {
     localStorage.removeItem("minesweeper_game");
-    console.log("저장된 게임 삭제 완료");
   }
 
   // 저장된 게임 존재 여부 확인
@@ -1223,45 +1206,29 @@ function showHelp() {
   const helpElement = document.createElement("div");
   helpElement.className = "game-result";
   helpElement.innerHTML = `
-    <h2>게임 방법</h2>
+    <h2>도움말</h2>
     <div class="help-content">
-      <p><strong>목표:</strong> 지뢰를 피해 모든 안전한 칸을 열어야 합니다.</p>
-      <p><strong>조작:</strong></p>
-      <ul>
-        <li>좌클릭: 칸 열기</li>
-        <li>우클릭: 깃발 표시/제거</li>
-      </ul>
-      <p><strong>숫자:</strong> 주변 8칸에 있는 지뢰의 개수를 나타냅니다.</p>
-      <p><strong>깃발:</strong> 지뢰가 있다고 생각되는 위치에 표시합니다.</p>
-      <p><strong>승리 조건:</strong> 지뢰가 아닌 모든 칸을 열면 승리합니다.</p>
+      <p>문의: Jaeho Sin</p>
     </div>
     <button id="close-help">닫기</button>
   `;
-
   document.body.appendChild(helpElement);
-
   document.getElementById("close-help").addEventListener("click", () => {
     document.body.removeChild(helpElement);
   });
 }
 
-// 정보 표시 함수
 function showAbout() {
   const aboutElement = document.createElement("div");
   aboutElement.className = "game-result";
   aboutElement.innerHTML = `
-    <h2>지뢰찾기</h2>
+    <h2>Minesweeper</h2>
     <div class="about-content">
-      <p>버전: 1.0.0</p>
-      <p>Electron 기반 지뢰찾기 게임</p>
-      <p>© 2024 Minesweeper Electron</p>
-      <p>클래식 지뢰찾기 게임의 현대적 구현</p>
+      <p><strong>Developer:</strong> Jaeho Sin</p>
+      <p><strong>Version:</strong> 1.0</p>
     </div>
     <button id="close-about">닫기</button>
   `;
-
-  document.body.appendChild(aboutElement);
-
   document.getElementById("close-about").addEventListener("click", () => {
     document.body.removeChild(aboutElement);
   });
